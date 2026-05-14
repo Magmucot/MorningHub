@@ -1,0 +1,108 @@
+from typing import Any, Dict, Tuple
+import requests
+from flask import current_app
+from cachetools import TTLCache, cached
+from app.models.user import User
+
+WEATHER_CODES = {
+    0: "☀️ Ясно",
+    1: "🌤 Преимущественно ясно",
+    2: "⛅ Переменная облачность",
+    3: "☁️ Пасмурно",
+    45: "🌫 Туман",
+    48: "🌫 Туман (с инеем)",
+    51: "🌧 Мелкая морось",
+    53: "🌧 Морось",
+    55: "🌧 Сильная морось",
+    61: "🌧 Небольшой дождь",
+    63: "🌧 Дождь",
+    65: "🌧 Сильный дождь",
+    71: "❄️ Небольшой снег",
+    73: "❄️ Снег",
+    75: "❄️ Сильный снег",
+    80: "🌦 Ливни",
+    81: "🌧 Сильные ливни",
+    82: "⛈ Очень сильные ливни",
+    95: "🌩 Гроза",
+    96: "🌩 Гроза с небольшим градом",
+    99: "🌩 Гроза с сильным градом",
+}
+
+
+def _poluch_gorod_geo(gorod: str) -> Tuple[float, float, str]:
+    geo_u = "https://geocoding-api.open-meteo.com/v1/search"
+    r = requests.get(
+        geo_u,
+        params={"name": gorod, "count": 1, "language": "ru", "format": "json"},
+        timeout=5,
+    )
+    r.raise_for_status()
+    d = r.json()
+    rez_spis = d.get("results") or []
+    if not rez_spis:
+        raise ValueError(f"Город не найден: {gorod}")
+    perv = rez_spis[0]
+    return perv["latitude"], perv["longitude"], perv["name"]
+
+
+# Кеш на 1 час (3600 сек) для прогноза по координатам
+@cached(cache=TTLCache(maxsize=128, ttl=3600))
+def _poluch_pog(lat: float, lon: float) -> Dict[str, Any]:
+    pog_u = "https://api.open-meteo.com/v1/forecast"
+    r = requests.get(
+        pog_u,
+        params={
+            "latitude": lat,
+            "longitude": lon,
+            "daily": "weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+            "hourly": "temperature_2m",
+            "timezone": "auto",
+            "forecast_days": 2,
+        },
+        timeout=5,
+    )
+    r.raise_for_status()
+    payload = r.json()
+    daily = payload["daily"]
+    hourly = payload["hourly"]
+    pog_kod = daily["weathercode"][0]
+
+    # Берем температуры на следующие 12 часов (начиная с текущего времени примерно)
+    import datetime
+
+    tek_chas = datetime.datetime.now().hour
+    # Open-Meteo возвращает 48 часов, т.к forecast_days=2. Берем с текущего часа + 12.
+    chas_vremya = [t.split("T")[1] for t in hourly["time"][tek_chas : tek_chas + 12]]
+    chas_temp = hourly["temperature_2m"][tek_chas : tek_chas + 12]
+
+    return {
+        "date": daily["time"][0],
+        "description": WEATHER_CODES.get(pog_kod, "❓ Неизвестно"),
+        "temp_max": daily["temperature_2m_max"][0],
+        "temp_min": daily["temperature_2m_min"][0],
+        "precipitation_probability": daily["precipitation_probability_max"][0],
+        "hourly_times": chas_vremya,
+        "hourly_temps": chas_temp,
+    }
+
+
+def pog_prognoz(u: User) -> Dict[str, Any]:
+    """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
+    try:
+        lat = u.pog_lat
+        lon = u.pog_lon
+        g_name = u.pog_gorod
+
+        if lat is None or lon is None:
+            lat, lon, g_name = _poluch_gorod_geo(u.pog_gorod)
+            u.pog_lat = lat
+            u.pog_lon = lon
+            u.pog_gorod = g_name
+            # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
+            # но обновляем объект.
+
+        d = _poluch_pog(lat, lon)
+        d["city"] = g_name
+        return d
+    except Exception as e:
+        return {"error": str(e)}
