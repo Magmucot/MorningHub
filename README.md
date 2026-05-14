@@ -4,7 +4,7 @@
 
 ```text
 morninghub/
-├── pyproject.toml           # Файл конфигурации проекта и зависимостей (uv)
+├── requirements.txt        # Файл зависимостей
 ├── run.py                   # Точка входа приложения
 └── app/
     ├── __init__.py          # Фабрика приложения (create_app)
