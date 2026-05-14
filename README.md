@@ -1,84 +1,170 @@
-# MorningHub
+# 🌅 MorningHub
 
-## 1. Структура директорий проекта
+Персональный веб-дашборд, который собирает и структурирует информацию для начала дня.  
+Новости IT и политики, актуальные курсы валют — всё в одном месте, настраиваемое под себя.
 
-```text
+---
+
+## Описание
+
+MorningHub — это Flask-приложение с многопользовательской авторизацией и системой виджетов.  
+Каждый пользователь получает персональный дашборд: выбирает нужные виджеты, задаёт их порядок и экспортирует утреннюю сводку в один файл.
+
+### 📰 IT-новости
+
+- Парсинг RSS-ленты **Habr** в реальном времени.
+- Заголовок, краткое описание и ссылка на каждую статью.
+- Кэширование результатов (TTL 15–30 мин) — без риска блокировки по IP.
+
+### 🗞️ Новости политики
+
+- Парсинг RSS-ленты **Lenta.ru** или **РБК**.
+- Актуальные заголовки с датой публикации.
+- Также кэшируются, обновляются асинхронно в фоне.
+
+### 💱 Курсы валют
+
+- Данные с открытого API **Frankfurter** (или ЦБ РФ XML-формат).
+- USD, EUR и другие — настраивается в конфиге.
+- In-memory кэш исключает лишние запросы к внешнему API.
+
+### 🖼️ Кастомизация
+
+- Загрузка фонового изображения для дашборда.
+- Файлы сохраняются с UUID-именами; MIME-тип и расширение строго проверяются.
+- Допустимые форматы: `.png`, `.jpg`, `.jpeg`, `.webp`.
+
+### 📤 Экспорт сводки
+
+- Выгрузка утреннего дайджеста в **TXT** или **CSV** через `GET /api/v1/export?format=<txt|csv>`.
+- Агрегатор `aggregator.py` собирает данные всех активных виджетов в один документ.
+
+---
+
+## Структура проекта
+
+```
 morninghub/
-├── requirements.txt        # Файл зависимостей
-├── run.py                   # Точка входа приложения
+├── run.py                   # Точка входа
+├── pyproject.toml           # Зависимости (uv)
 └── app/
     ├── __init__.py          # Фабрика приложения (create_app)
     ├── config.py            # Конфигурационные классы
     ├── extensions.py        # Инициализация db, login_manager, csrf
-    ├── models/              # Слой данных (SQLAlchemy 2.0)
-    │   ├── __init__.py
+    ├── models/
     │   ├── user.py          # Модель пользователя
     │   └── widget.py        # Модель настроек виджетов
-    ├── forms/               # WTForms
-    │   ├── __init__.py
-    │   ├── auth.py          # Формы логина и регистрации
-    │   └── settings.py      # Форма настроек (загрузка фона)
-    ├── blueprints/          # Роуты (MVC Controller)
-    │   ├── __init__.py
-    │   ├── auth.py          # Авторизация
-    │   ├── dashboard.py     # Главная страница и настройки
-    │   └── api.py           # REST эндпоинты для JS и экспорта
-    ├── services/            # Бизнес-логика (Сервисный слой)
-    │   ├── __init__.py
-    │   ├── aggregator.py    # Оркестратор для сбора сводки (экспорт)
-    │   ├── currency.py      # Клиент API курсов валют (с кэшированием)
-    │   ├── it_news.py       # Парсер новостей IT (Habr/RSS)
+    ├── forms/
+    │   ├── auth.py          # Логин и регистрация
+    │   └── settings.py      # Настройки (загрузка фона)
+    ├── blueprints/
+    │   ├── auth.py          # /auth — авторизация
+    │   ├── dashboard.py     # / — главная и настройки
+    │   └── api.py           # /api/v1 — REST эндпоинты
+    ├── services/
+    │   ├── aggregator.py    # Оркестратор экспорта
+    │   ├── currency.py      # Клиент курсов валют (с кэшем)
+    │   ├── it_news.py       # Парсер Habr RSS
     │   ├── politics.py      # Парсер политических новостей
-    │   └── uploader.py      # Сервис безопасной загрузки файлов (UUID, проверка MIME)
+    │   └── uploader.py      # Безопасная загрузка файлов (UUID + MIME)
     ├── static/
-    │   ├── css/
-    │   │   └── custom.css   # Специфичные стили поверх Bootstrap
-    │   ├── js/
-    │   │   └── dashboard.js # Fetch API логика для виджетов
-    │   └── uploads/         # Директория для фоновых изображений
-    └── templates/           # Jinja2 шаблоны
-        ├── base.html        
+    │   ├── css/custom.css
+    │   ├── js/dashboard.js  # Fetch API логика виджетов
+    │   └── uploads/         # Фоновые изображения
+    └── templates/
+        ├── base.html
         ├── auth/
         │   ├── login.html
         │   └── register.html
         └── dashboard/
-            ├── index.html   
+            ├── index.html
             └── settings.html
 ```
 
-## 2. Схема базы данных (SQLAlchemy 2.0)
+---
+
+## Схема базы данных
 
 **Таблица `users`**
-- `id`: Mapped[int] (Primary Key)
-- `username`: Mapped[str] (String(64), Unique, Index, Not Null)
-- `password_hash`: Mapped[str] (String(256), Not Null)
-- `background_image`: Mapped[str | None] (String(255), Nullable)
-- `created_at`: Mapped[datetime] (DateTime, Not Null)
-- Связь: `widgets` = relationship("WidgetConfig", back_populates="user", cascade="all, delete-orphan")
+
+| Поле               | Тип                       | Описание                     |
+|--------------------|---------------------------|------------------------------|
+| `id`               | `Mapped[int]` (PK)        | Первичный ключ               |
+| `username`         | `Mapped[str]` (Unique)    | Имя пользователя             |
+| `password_hash`    | `Mapped[str]`             | Хэш пароля                   |
+| `background_image` | `Mapped[str \| None]`     | Путь к фоновому изображению  |
+| `created_at`       | `Mapped[datetime]`        | Дата регистрации             |
 
 **Таблица `widget_configs`**
-- `id`: Mapped[int] (Primary Key)
-- `user_id`: Mapped[int] (Foreign Key `users.id`, Index, Not Null)
-- `widget_type`: Mapped[str] (String(50), Not Null)
-- `is_active`: Mapped[bool] (Boolean, Default True, Not Null)
-- `position`: Mapped[int] (Integer, Default 0)
-- `user` = relationship("User", back_populates="widgets")
-- Уникальный Constraint: `UniqueConstraint('user_id', 'widget_type')`
 
-## 3. Маршрутизация (REST API эндпоинты и Views)
+| Поле          | Тип                    | Описание                            |
+|---------------|------------------------|-------------------------------------|
+| `id`          | `Mapped[int]` (PK)     | Первичный ключ                      |
+| `user_id`     | `Mapped[int]` (FK)     | Связь с `users.id`                  |
+| `widget_type` | `Mapped[str]`          | Тип виджета (`it-news`, `currency`) |
+| `is_active`   | `Mapped[bool]`         | Показывать ли виджет                |
+| `position`    | `Mapped[int]`          | Порядок отображения                 |
 
-**Blueprints: Auth (`/auth`)**
-- `GET, POST /auth/login`
-- `GET, POST /auth/register`
-- `GET /auth/logout`
+> Уникальный констрейнт: `UniqueConstraint('user_id', 'widget_type')`
 
-**Blueprints: Dashboard (`/`)**
-- `GET /` — Рендеринг дашборда.
-- `GET, POST /settings` — Настройки виджетов и загрузка фона.
+---
 
-**Blueprints: API (`/api/v1`)**
-- `GET /api/v1/widgets/it-news` — JSON с новостями.
-- `GET /api/v1/widgets/currency` — JSON с курсами валют.
-- `GET /api/v1/widgets/politics` — JSON с политическими новостями.
-- `PATCH /api/v1/widgets/<widget_type>/toggle` — Переключение состояния виджета.
-- `GET /api/v1/export?format=<txt|csv>` — Генерация утренней сводки.
+## API
+
+| Метод   | Эндпоинт                              | Описание                              |
+|---------|---------------------------------------|---------------------------------------|
+| `GET`   | `/api/v1/widgets/it-news`             | JSON с IT-новостями                   |
+| `GET`   | `/api/v1/widgets/currency`            | JSON с курсами валют                  |
+| `GET`   | `/api/v1/widgets/politics`            | JSON с политическими новостями        |
+| `PATCH` | `/api/v1/widgets/<widget_type>/toggle`| Переключение активности виджета       |
+| `GET`   | `/api/v1/export?format=<txt\|csv>`    | Экспорт утренней сводки               |
+
+---
+
+## Требования
+
+- Python 3.11+
+- Flask
+- Flask-Login
+- Flask-WTF
+- SQLAlchemy 2.0
+- feedparser
+- requests
+- python-magic *(проверка MIME)*
+
+---
+
+## Установка
+
+```bash
+# Клонировать репозиторий
+git clone https://github.com/Magmucot/MorningHub.git
+cd MorningHub
+
+# Установить зависимости через uv
+uv sync
+
+# Запустить приложение
+uv run python run.py
+```
+
+Приложение запустится на `http://127.0.0.1:5000`.
+
+---
+
+## Использование
+
+1. Откройте `http://127.0.0.1:5000` и зарегистрируйтесь.
+2. На дашборде активируйте нужные виджеты через переключатели.
+3. Загрузите фоновое изображение в разделе **Настройки**.
+4. Для экспорта утренней сводки перейдите по ссылке:
+   - **TXT:** `/api/v1/export?format=txt`
+   - **CSV:** `/api/v1/export?format=csv`
+
+---
+
+## 📜 Лицензия
+
+### Magmucot
+
+### MIT License © 2025
