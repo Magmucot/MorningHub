@@ -167,4 +167,4 @@ uv run python run.py
 
 ### Magmucot
 
-### MIT License © 2025
+### MIT License © 2026
