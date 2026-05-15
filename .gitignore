@@ -203,7 +203,7 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 GEMINI.md
-PROJECT_PLAN.md
+*PROJECT_PLAN.md
 # Ruff stuff:
 .ruff_cache/
 

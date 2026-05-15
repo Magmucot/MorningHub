@@ -24,9 +24,9 @@ class User(UserMixin, db.Model):
     weath_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
     # AI
-    ai_key: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    ai_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    ai_model: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    ai_key: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    ai_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    ai_model: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     # UI
     setka_lock: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

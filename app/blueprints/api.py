@@ -14,6 +14,18 @@ from app.services.weather import weath_prog
 from app.services.crypto import get_crypto_kurs
 from app.services.game_news import get_game_news
 
+
+def _safe_commit() -> bool:
+    """Безопасное выполнение транзакций БД с автоматическим откатом при ошибке."""
+    try:
+        _safe_commit()
+        return True
+    except SQLAlchemyError as err:
+        db.session.rollback()
+        logger.error("Ошибка транзакции БД: %s", err)
+        return False
+
+
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 
@@ -28,7 +40,7 @@ def api_crypto():
 def api_weather():
     res = weath_prog(current_user)
     # Если город был разрешен, сохраняем координаты
-    db.session.commit()
+    _safe_commit()
     return jsonify(res)
 
 
@@ -42,10 +54,10 @@ def api_bookmarks():
 
         bm = Bookmark(usr_id=current_user.id, title=data["title"], url=data["url"], icon=data.get("icon", "fa-link"))
         db.session.add(bm)
-        db.session.commit()
+        _safe_commit()
         return jsonify({"success": True, "id": bm.id})
 
-    bm_lst = Bookmark.query.filter_by(ust_id=current_user.id).all()
+    bm_lst = Bookmark.query.filter_by(usr_id=current_user.id).all()
     return jsonify([{"id": bm.id, "title": bm.title, "url": bm.url, "icon": bm.icon} for bm in bm_lst])
 
 
@@ -56,7 +68,7 @@ def api_delete_bookmark(bm_id):
     if not bm:
         return jsonify({"error": "Not found"}), 404
     db.session.delete(bm)
-    db.session.commit()
+    _safe_commit()
     return jsonify({"success": True})
 
 
@@ -74,19 +86,19 @@ def save_grid_widgets():
         tip = i.get("widget_type")
         if tip in wid_karta:
             w = wid_karta[tip]
-            w.x = i.get("x", 0)
-            w.y = i.get("y", 0)
-            w.w = i.get("w", 4)
-            w.h = i.get("h", 3)
+            w.x = i.get("x", w.x)
+            w.y = i.get("y", w.y)
+            w.w = i.get("w", w.w)
+            w.h = i.get("h", w.h)
 
-    db.session.commit()
+    _safe_commit()
     return jsonify({"success": True})
 
 
 @bp.route("/widgets/ai-summary", methods=["GET"])
 @login_required
-def api_ai_summary():
-    return jsonify(get_ai_summary(current_user))
+async def api_ai_summary():
+    return jsonify(await get_ai_summary(current_user))
 
 
 @bp.route("/user/lock-grid", methods=["PATCH"])
@@ -97,7 +109,7 @@ def lock_grid():
         return jsonify({"error": "Invalid payload"}), 400
 
     current_user.setka_lock = bool(data["is_grid_locked"])
-    db.session.commit()
+    _safe_commit()
     return jsonify({"success": True, "is_grid_locked": current_user.setka_lock})
 
 
@@ -143,7 +155,7 @@ def toggle_widget(w_tip: str):
         return jsonify({"error": "Invalid payload"}), 400
 
     w.is_act = bool(data["is_active"])
-    db.session.commit()
+    _safe_commit()
 
     return jsonify({"success": True, "is_active": w.is_act})
 
