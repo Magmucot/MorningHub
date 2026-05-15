@@ -5,7 +5,7 @@ from app.services.it_news import get_it_news
 from app.services.politics import get_polit_news
 from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
-from app.services.game_news import game_news
+from app.services.game_news import get_game_news
 
 
 def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
@@ -14,15 +14,15 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
     for w in act_wid_lst:
         if w.w_tip == "ai_summary":
             summary.append("\n--- ИИ-Пересказ Новостей ---")
-            rez = get_ai_summary(w.user)
-            if "error" in rez:
-                summary.append(f"Ошибка: {rez['error']}")
+            res = get_ai_summary(w.user)
+            if "error" in res:
+                summary.append(f"Ошибка: {res['error']}")
             else:
-                summary.append(rez.get("summary", ""))
+                summary.append(res.get("summary", ""))
 
         elif w.w_tip == "currency":
             summary.append("\n--- Курсы Валют ---")
-            kurs_d = get_val_kurs(w.user.val_spis)
+            kurs_d = get_val_kurs(w.user.val_lst)
             if "error" in kurs_d:
                 summary.append(f"Ошибка загрузки: {kurs_d['error']}")
             else:
@@ -33,8 +33,8 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
 
         elif w.w_tip == "it_news":
             summary.append("\n--- IT Новости (Habr, OpenNET) ---")
-            news_spis = get_it_news(lim=5)
-            for n in news_spis:
+            news_lst = get_it_news(lim=5)
+            for n in news_lst:
                 if "error" in n:
                     summary.append(f"Ошибка: {n['error']}")
                     break
@@ -42,8 +42,8 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
 
         elif w.w_tip == "game_news":
             summary.append("\n--- Игровые Новости (Playground.ru) ---")
-            news_spis = game_news(lim=5)
-            for n in news_spis:
+            news_lst = get_game_news(lim=5)
+            for n in news_lst:
                 if "error" in n:
                     summary.append(f"Ошибка: {n['error']}")
                     break
@@ -51,8 +51,8 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
 
         elif w.w_tip == "ai_models":
             summary.append("\n--- AI Модели (Artificial Analysis) ---")
-            news_spis = get_ai_models_news(lim=5)
-            for n in news_spis:
+            news_lst = get_ai_models_news(lim=5)
+            for n in news_lst:
                 if "error" in n:
                     summary.append(f"Ошибка: {n['error']}")
                     break
@@ -60,8 +60,8 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
 
         elif w.w_tip == "politics":
             summary.append("\n--- Политика (Lenta.ru) ---")
-            news_spis = get_polit_news(lim=5)
-            for n in news_spis:
+            news_lst = get_polit_news(lim=5)
+            for n in news_lst:
                 if "error" in n:
                     summary.append(f"Ошибка: {n['error']}")
                     break
