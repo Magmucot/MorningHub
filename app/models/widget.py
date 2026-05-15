@@ -16,7 +16,7 @@ class WidgetConfig(db.Model):
     # GridStack properties
     x: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     y: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    w: Mapped[int] = mapped_column(Integer, default=4, nullable=False)
+    w: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
     h: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="widgets")

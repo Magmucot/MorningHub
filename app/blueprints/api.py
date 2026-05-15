@@ -12,6 +12,7 @@ from app.services.ai_models import poluch_ai_mod_nov
 from app.services.ai_summary import poluch_ai_svod
 from app.services.weather import pog_prog
 from app.services.crypto import poluch_crypto_kurs
+from app.services.game_news import igry_nov
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
@@ -110,6 +111,12 @@ def api_ai_models():
 @login_required
 def api_it_news():
     return jsonify(it_nov())
+
+
+@bp.route("/widgets/game-news", methods=["GET"])
+@login_required
+def api_game_news():
+    return jsonify(igry_nov())
 
 
 @bp.route("/widgets/currency", methods=["GET"])

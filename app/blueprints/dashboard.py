@@ -13,6 +13,7 @@ bp = Blueprint("dashboard", __name__)
 def _prover_wid_def(u_id: int):
     wid_def = [
         "it_news",
+        "game_news",
         "currency",
         "politics",
         "ai_models",
@@ -58,21 +59,21 @@ def settings():
             # Обработка города погоды
             if "weather_city" in request.form:
                 g = request.form.get("weather_city", "").strip()
-                if g and g != current_user.pog_gorod:
-                    current_user.pog_gorod = g
+                if g and g != current_user.pog_city:
+                    current_user.pog_city = g
                     current_user.pog_lat = None
                     current_user.pog_lon = None
 
             # Настройки ИИ
-            current_user.ai_kluch = request.form.get("ai_api_key", "").strip() or None
+            current_user.ai_key = request.form.get("ai_api_key", "").strip() or None
             current_user.ai_url = request.form.get("ai_base_url", "").strip() or None
             current_user.ai_mod = request.form.get("ai_model", "").strip() or None
 
             # Настройки виджетов
             if "crypto_tracking" in request.form:
-                current_user.kripta_spis = request.form.get("crypto_tracking", "").strip()
+                current_user.crypto_spis = request.form.get("crypto_tracking", "").strip()
             if "currency_tracking" in request.form:
-                current_user.valuta_spis = request.form.get("currency_tracking", "").strip()
+                current_user.val_spis = request.form.get("currency_tracking", "").strip()
             if "clock_style" in request.form:
                 current_user.chas_stil = request.form.get("clock_style", "both")
 

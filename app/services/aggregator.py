@@ -5,6 +5,7 @@ from app.services.it_news import it_nov
 from app.services.politics import polit_nov
 from app.services.ai_models import poluch_ai_mod_nov
 from app.services.ai_summary import poluch_ai_svod
+from app.services.game_news import igry_nov
 
 
 def sobr_svod_t(akt_wid_spis: List[WidgetConfig]) -> str:
@@ -33,6 +34,15 @@ def sobr_svod_t(akt_wid_spis: List[WidgetConfig]) -> str:
         elif w.w_tip == "it_news":
             svod.append("\n--- IT Новости (Habr, OpenNET) ---")
             nov_spis = it_nov(lim=5)
+            for n in nov_spis:
+                if "error" in n:
+                    svod.append(f"Ошибка: {n['error']}")
+                    break
+                svod.append(f"- {n.get('title')}\n  {n.get('link')}")
+
+        elif w.w_tip == "game_news":
+            svod.append("\n--- Игровые Новости (Playground.ru) ---")
+            nov_spis = igry_nov(lim=5)
             for n in nov_spis:
                 if "error" in n:
                     svod.append(f"Ошибка: {n['error']}")

@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (kon_setka && typeof GridStack !== 'undefined') {
         const is_lock = kon_setka.getAttribute('data-locked') === 'true';
         setka = GridStack.init({
-            cellHeight: 100,
-            margin: 10,
+            cellHeight: 70,
+            margin: 8,
             disableOneColumnMode: false,
             float: true,
             staticGrid: is_lock,
@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let u = '';
         if (tip === 'currency') u = '/api/v1/widgets/currency';
         if (tip === 'it_news') u = '/api/v1/widgets/it-news';
+        if (tip === 'game_news') u = '/api/v1/widgets/game-news';
         if (tip === 'politics') u = '/api/v1/widgets/politics';
         if (tip === 'ai_models') u = '/api/v1/widgets/ai-models';
         if (tip === 'ai_summary') u = '/api/v1/widgets/ai-summary';
@@ -178,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
         }
-        else if (tip === 'it_news' || tip === 'politics' || tip === 'ai_models') {
+        else if (tip === 'it_news' || tip === 'game_news' || tip === 'politics' || tip === 'ai_models') {
             html = '<div class="news-list px-1">';
             d.forEach(i => {
                 if (i.error) {

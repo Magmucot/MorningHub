@@ -7,6 +7,7 @@ from app.services.ai_models import poluch_ai_mod_nov
 from app.services.ai_summary import poluch_ai_svod
 from app.services.weather import pog_prog
 from app.services.crypto import poluch_crypto_kurs
+from app.services.game_news import igry_nov
 
 __all__ = [
     "poluch_val_kurs",
@@ -18,4 +19,5 @@ __all__ = [
     "poluch_ai_svod",
     "pog_prog",
     "poluch_crypto_kurs",
+    "igry_nov",
 ]

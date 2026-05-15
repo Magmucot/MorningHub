@@ -23,6 +23,7 @@ def register():
 
         wid_def = [
             "it_news",
+            "game_news",
             "currency",
             "politics",
             "ai_models",

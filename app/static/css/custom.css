@@ -181,11 +181,13 @@ body[data-theme="dark"]::before {
 }
 
 .widget-card .card-header {
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     border-bottom: 1px solid var(--card-border);
     background-color: var(--header-bg) !important;
     color: var(--text-color);
+    padding: 8px 12px;
+    font-size: 0.9rem;
 }
 
 .news-item {

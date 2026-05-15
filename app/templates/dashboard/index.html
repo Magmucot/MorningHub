@@ -27,6 +27,7 @@
                 <div class="card-header fw-bold bg-white drag-handle" style="cursor: grab;">
                     {% if widget.w_tip == 'currency' %}💰 Курсы Валют{% endif %}
                     {% if widget.w_tip == 'it_news' %}💻 IT Новости (Habr, OpenNET){% endif %}
+                    {% if widget.w_tip == 'game_news' %}🎮 Игровые Новости (Playground.ru){% endif %}
                     {% if widget.w_tip == 'politics' %}🏛 Политика (Lenta.ru){% endif %}
                     {% if widget.w_tip == 'ai_models' %}🤖 AI Модели{% endif %}
                     {% if widget.w_tip == 'ai_summary' %}✨ ИИ-Сводка Новостей{% endif %}
@@ -37,7 +38,7 @@
                     {% if widget.w_tip == 'crypto' %}🪙 Криптовалюты{% endif %}
                 </div>
                 <div class="card-body widget-content d-flex flex-column justify-content-center p-2" style="overflow-y: auto;">
-                    {% if widget.w_tip in ['currency', 'it_news', 'politics', 'ai_models', 'ai_summary', 'weather', 'crypto'] %}
+                    {% if widget.w_tip in ['currency', 'it_news', 'game_news', 'politics', 'ai_models', 'ai_summary', 'weather', 'crypto'] %}
                     <div class="text-center text-muted mt-3 loading-indicator">
                         <div class="spinner-border spinner-border-sm" role="status"></div> Загрузка...
                     </div>
