@@ -1,6 +1,7 @@
 from flask import Blueprint, Response, jsonify, request
 from flask_login import login_required, current_user
-
+import logging
+from sqlalchemy.exc import SQLAlchemyError
 from app.extensions import db
 from app.models.widget import WidgetConfig
 from app.models.bookmark import Bookmark
@@ -14,11 +15,12 @@ from app.services.weather import weath_prog
 from app.services.crypto import get_crypto_kurs
 from app.services.game_news import get_game_news
 
+logger = logging.getLogger(__name__)
+
 
 def _safe_commit() -> bool:
-    """Безопасное выполнение транзакций БД с автоматическим откатом при ошибке."""
     try:
-        _safe_commit()
+        db.session.commit()
         return True
     except SQLAlchemyError as err:
         db.session.rollback()

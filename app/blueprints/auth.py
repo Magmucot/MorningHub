@@ -52,7 +52,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        usr = User.query.filter_by(u_name=form.username.data).first()
+        usr = User.query.filter_by(usr_name=form.username.data).first()
         if usr and usr.check_pass(form.password.data):
             login_user(usr)
             return redirect(url_for("dashboard.index"))

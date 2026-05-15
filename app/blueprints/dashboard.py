@@ -5,7 +5,7 @@ from app.extensions import db
 from app.forms.settings import SettingsForm
 from app.models.widget import WidgetConfig
 from app.models.bookmark import Bookmark
-from app.services.uploader import save_fon_img
+from app.services.uploader import save_back_img
 
 bp = Blueprint("dashboard", __name__)
 
@@ -59,15 +59,15 @@ def settings():
             # Обработка города погоды
             if "weather_city" in request.form:
                 g = request.form.get("weather_city", "").strip()
-                if g and g != current_user.pog_city:
-                    current_user.pog_city = g
-                    current_user.pog_lat = None
-                    current_user.pog_lon = None
+                if g and g != current_user.weath_city:
+                    current_user.weath_city = g
+                    current_user.weath_lat = None
+                    current_user.weath_lon = None
 
             # Настройки ИИ
             current_user.ai_key = request.form.get("ai_api_key", "").strip() or None
             current_user.ai_url = request.form.get("ai_base_url", "").strip() or None
-            current_user.ai_mod = request.form.get("ai_model", "").strip() or None
+            current_user.ai_model = request.form.get("ai_model", "").strip() or None
 
             # Настройки виджетов
             if "crypto_tracking" in request.form:
@@ -75,12 +75,12 @@ def settings():
             if "currency_tracking" in request.form:
                 current_user.val_lst = request.form.get("currency_tracking", "").strip()
             if "clock_style" in request.form:
-                current_user.chas_stil = request.form.get("clock_style", "both")
+                current_user.clock_stile = request.form.get("clock_style", "both")
 
             # Настройки UI
             t = request.form.get("theme")
             if t in ["light", "dark"]:
-                current_user.tema = t
+                current_user.theme = t
 
             c = request.form.get("widget_color")
             if c:
@@ -96,11 +96,11 @@ def settings():
             db.session.commit()
             flash("Настройки успешно обновлены.", "success")
 
-            if form.fon_img.data:
+            if form.back_img.data:
                 try:
-                    imya_f = sohr_fon_img(form.fon_img.data)
+                    imya_f = save_back_img(form.back_img.data)
                     if imya_f:
-                        current_user.fon_img = imya_f
+                        current_user.back_img = imya_f
                         db.session.commit()
                         flash("Фоновое изображение успешно обновлено.", "success")
                 except ValueError as e:

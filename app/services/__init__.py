@@ -1,7 +1,7 @@
 from app.services.currency import get_val_kurs
 from app.services.it_news import get_it_news
 from app.services.politics import get_polit_news
-from app.services.uploader import save_fon_img
+from app.services.uploader import save_back_img
 from app.services.aggregator import sobr_summary_t
 from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
@@ -13,7 +13,7 @@ __all__ = [
     "get_val_kurs",
     "get_it_news",
     "get_polit_news",
-    "save_fon_img",
+    "save_back_img",
     "sobr_summary_t",
     "get_ai_models_news",
     "get_ai_summary",
