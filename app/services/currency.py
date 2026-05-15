@@ -5,14 +5,14 @@ from typing import Dict, Any
 
 # Кэш на 1 час (3600 секунд)
 @cached(cache=TTLCache(maxsize=100, ttl=3600))
-def get_val_kurs(val_spis_str: str) -> Dict[str, Any]:
-    v_spis = [c.strip().upper() for c in val_spis_str.split(",") if c.strip()]
-    if not v_spis:
+def get_val_kurs(val_lst_str: str) -> Dict[str, Any]:
+    v_lst = [c.strip().upper() for c in val_lst_str.split(",") if c.strip()]
+    if not v_lst:
         return {}
 
-    u = "https://www.cbr-xml-daily.ru/daily_json.js"
+    url = "https://www.cbr-xml-daily.ru/daily_json.js"
     try:
-        r = requests.get(u, timeout=5)
+        r = requests.get(url, timeout=5)
         r.raise_for_status()
         d = r.json()
 
@@ -28,13 +28,13 @@ def get_val_kurs(val_spis_str: str) -> Dict[str, Any]:
             pre = v.get("Previous", 0.0) / nom if nom else 0.0
             return {"current": round(tek, 2), "previous": round(pre, 2)}
 
-        rez = {}
-        for c in v_spis:
+        res = {}
+        for c in v_lst:
             v_info = get_v(c)
             if v_info:
-                rez[c] = v_info
+                res[c] = v_info
 
-        rez["date"] = d.get("Date", "")
-        return rez
+        res["date"] = d.get("Date", "")
+        return res
     except requests.RequestException as e:
         return {"error": str(e)}

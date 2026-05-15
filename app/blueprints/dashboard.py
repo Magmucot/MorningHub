@@ -43,9 +43,9 @@ def _prover_wid_def(usr_id: int):
 def index():
     _prover_wid_def(current_user.id)
     # Получаем активные виджеты пользователя (для GridStack)
-    wid_spis = WidgetConfig.query.filter_by(usr_id=current_user.id, is_act=True).all()
-    bm_spis = Bookmark.query.filter_by(usr_id=current_user.id).all()
-    return render_template("dashboard/index.html", widgets=wid_spis, bookmarks=bm_spis)
+    wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id, is_act=True).all()
+    bm_lst = Bookmark.query.filter_by(usr_id=current_user.id).all()
+    return render_template("dashboard/index.html", widgets=wid_lst, bookmarks=bm_lst)
 
 
 @bp.route("/settings", methods=["GET", "POST"])
@@ -59,15 +59,15 @@ def settings():
             # Обработка города погоды
             if "weather_city" in request.form:
                 g = request.form.get("weather_city", "").strip()
-                if g and g != current_user.weath_city:
-                    current_user.weath_city = g
-                    current_user.weath_lat = None
-                    current_user.weath_lon = None
+                if g and g != current_user.pog_city:
+                    current_user.pog_city = g
+                    current_user.pog_lat = None
+                    current_user.pog_lon = None
 
             # Настройки ИИ
             current_user.ai_key = request.form.get("ai_api_key", "").strip() or None
             current_user.ai_url = request.form.get("ai_base_url", "").strip() or None
-            current_user.ai_model = request.form.get("ai_model", "").strip() or None
+            current_user.ai_mod = request.form.get("ai_model", "").strip() or None
 
             # Настройки виджетов
             if "crypto_tracking" in request.form:
@@ -75,12 +75,12 @@ def settings():
             if "currency_tracking" in request.form:
                 current_user.val_lst = request.form.get("currency_tracking", "").strip()
             if "clock_style" in request.form:
-                current_user.clock_stile = request.form.get("clock_style", "both")
+                current_user.chas_stil = request.form.get("clock_style", "both")
 
             # Настройки UI
             t = request.form.get("theme")
             if t in ["light", "dark"]:
-                current_user.theme = t
+                current_user.tema = t
 
             c = request.form.get("widget_color")
             if c:
@@ -98,19 +98,19 @@ def settings():
 
             if form.fon_img.data:
                 try:
-                    imya_f = save_fon_img(form.fon_img.data)
+                    imya_f = sohr_fon_img(form.fon_img.data)
                     if imya_f:
-                        current_user.back_img = imya_f
+                        current_user.fon_img = imya_f
                         db.session.commit()
                         flash("Фоновое изображение успешно обновлено.", "success")
                 except ValueError as e:
                     flash(str(e), "danger")
             return redirect(url_for("dashboard.settings"))
         else:
-            for f, err_spis in form.errors.items():
-                for e in err_spis:
+            for f, err_lst in form.errors.items():
+                for e in err_lst:
                     flash(f"{e}", "danger")
 
     # Все виджеты для управления переключателями
-    wid_spis = WidgetConfig.query.filter_by(usr_id=current_user.id).order_by(WidgetConfig.poz).all()
-    return render_template("dashboard/settings.html", form=form, widgets=wid_spis)
+    wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id).order_by(WidgetConfig.poz).all()
+    return render_template("dashboard/settings.html", form=form, widgets=wid_lst)

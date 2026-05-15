@@ -7,7 +7,7 @@ from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
 from app.services.weather import weath_prog
 from app.services.crypto import get_crypto_kurs
-from app.services.game_news import game_news
+from app.services.game_news import get_game_news
 
 __all__ = [
     "get_val_kurs",
@@ -19,5 +19,5 @@ __all__ = [
     "get_ai_summary",
     "weath_prog",
     "get_crypto_kurs",
-    "game_news",
+    "get_game_news",
 ]

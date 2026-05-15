@@ -38,14 +38,14 @@ def _get_city_geo(city: str) -> Tuple[float, float, str]:
     )
     r.raise_for_status()
     d = r.json()
-    rez_spis = d.get("results") or []
-    if not rez_spis:
+    res_lst = d.get("results") or []
+    if not res_lst:
         raise ValueError(f"Город не найден: {city}")
-    perv = rez_spis[0]
+    perv = res_lst[0]
     return perv["latitude"], perv["longitude"], perv["name"]
 
 
-# Кеш на 1 час (3600 сек) для прогноза по координатам
+# Кеш на 1 час
 @cached(cache=TTLCache(maxsize=128, ttl=3600))
 def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
     weath_u = "https://api.open-meteo.com/v1/forecast"
@@ -67,13 +67,12 @@ def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
     hourly = payload["hourly"]
     weath_kod = daily["weathercode"][0]
 
-    # Берем температуры на следующие 12 часов (начиная с текущего времени примерно)
     import datetime
 
-    tek_chas = datetime.datetime.now().hour
-    # Open-Meteo возвращает 48 часов, т.к forecast_days=2. Берем с текущего часа + 12.
-    chas_vremya = [t.split("T")[1] for t in hourly["time"][tek_chas : tek_chas + 12]]
-    chas_temp = hourly["temperature_2m"][tek_chas : tek_chas + 12]
+    curr_h = datetime.datetime.now().hour
+    # Open-Meteo возвращает 48 часов, т.к forecast_days=2
+    chas_vremya = [t.split("T")[1] for t in hourly["time"][curr_h : curr_h + 12]]
+    chas_temp = hourly["temperature_2m"][curr_h : curr_h + 12]
 
     return {
         "date": daily["time"][0],
@@ -86,18 +85,18 @@ def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
     }
 
 
-def weath_prog(u: User) -> Dict[str, Any]:
+def weath_prog(usr: User) -> Dict[str, Any]:
     """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
     try:
-        lat = u.weath_lat
-        lon = u.weath_lon
-        g_name = u.weath_city
+        lat = usr.weath_lat
+        lon = usr.weath_lon
+        g_name = usr.weath_city
 
         if lat is None or lon is None:
-            lat, lon, g_name = _get_city_geo(u.weath_city)
-            u.weath_lat = lat
-            u.weath_lon = lon
-            u.weath_city = g_name
+            lat, lon, g_name = _get_city_geo(usr.weath_city)
+            usr.weath_lat = lat
+            usr.weath_lon = lon
+            usr.weath_city = g_name
             # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
             # но обновляем объект.
 

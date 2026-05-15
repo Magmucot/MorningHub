@@ -35,29 +35,29 @@ IPUT_NAMES = {
 
 
 @cached(cache=TTLCache(maxsize=100, ttl=600))
-def get_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:
-    c_spis = [c.strip().lower() for c in crypto_spis_str.split(",") if c.strip()]
-    if not c_spis:
+def get_crypto_kurs(crypto_lst_str: str) -> Dict[str, Any]:
+    c_lst = [c.strip().lower() for c in crypto_lst_str.split(",") if c.strip()]
+    if not c_lst:
         return {}
 
-    id_spis = ",".join(c_spis)
+    id_lst = ",".join(c_lst)
 
-    u = "https://api.coingecko.com/api/v3/simple/price"
-    p = {"ids": id_spis, "vs_currencies": "usd", "include_24hr_change": "true"}
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    p = {"ids": id_lst, "vs_currencies": "usd", "include_24hr_change": "true"}
     try:
-        r = requests.get(u, params=p, timeout=5)
+        r = requests.get(url, params=p, timeout=5)
         r.raise_for_status()
         d = r.json()
 
-        rez = {}
-        for cid in c_spis:
+        res = {}
+        for cid in c_lst:
             info = d.get(cid)
             if info:
                 sym = KNOWN_CRYPTOS.get(cid, cid.upper()[:4])
-                rez[sym] = {
+                res[sym] = {
                     "price": round(info.get("usd", 0), 2),
                     "change": round(info.get("usd_24h_change", 0), 2),
                 }
-        return rez
+        return res
     except requests.RequestException as e:
         return {"error": str(e)}
