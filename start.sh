@@ -10,11 +10,11 @@ fi
 
 export FLASK_ENV=prod
 export SECRET_KEY=${SECRET_KEY:-$(openssl rand -hex 32)}
-export DATABASE_URL=${DATABASE_URL:-sqlite:///$(pwd)/morninghub_prod.db}
-export OPENAI_API_KEY=${OPENAI_API_KEY:-""}
+export DB_URL=${DB_URL:-sqlite:///$(pwd)/db/morninghub_prod.db}
+export AI_API_KEY=${AI_API_KEY:-""}
 
 echo "Starting MorningHub in PRODUCTION mode..."
-echo "Database: $DATABASE_URL"
+echo "Db: $DB_URL"
 
 # База данных
 python -c "from app import create_app; from app.extensions import db; app = create_app('prod'); with app.app_context(): db.create_all()"
