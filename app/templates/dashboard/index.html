@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 dashboard-header p-3 rounded shadow-sm">
-    <h2 class="m-0 text-white">Доброе утро, {{ current_user.u_name }}!</h2>
-    <div>
-        <button id="lockGridBtn" class="btn btn-{{ 'warning' if current_user.setka_lock else 'light' }} btn-sm shadow-sm me-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 dashboard-header p-3 rounded shadow-sm gap-3">
+    <h2 class="m-0 text-white fs-4 fs-md-2">Доброе утро, {{ current_user.u_name }}!</h2>
+    <div class="d-flex flex-wrap gap-2">
+        <button id="lockGridBtn" class="btn btn-{{ 'warning' if current_user.setka_lock else 'light' }} btn-sm shadow-sm">
             <i class="fas fa-{{ 'lock' if current_user.setka_lock else 'unlock' }}"></i> 
             <span>{{ 'Сетка зафиксирована' if current_user.setka_lock else 'Зафиксировать сетку' }}</span>
         </button>
-        <a href="{{ url_for('api.export_summary', format='txt') }}" class="btn btn-light btn-sm shadow-sm me-2">📄 Экспорт (TXT)</a>
+        <a href="{{ url_for('api.export_summary', format='txt') }}" class="btn btn-light btn-sm shadow-sm">📄 Экспорт (TXT)</a>
         <a href="{{ url_for('api.export_summary', format='csv') }}" class="btn btn-light btn-sm shadow-sm">📊 Экспорт (CSV)</a>
     </div>
 </div>

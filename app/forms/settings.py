@@ -4,7 +4,7 @@ from wtforms import SubmitField
 
 
 class SettingsForm(FlaskForm):
-    background_image = FileField(
+    fon_img = FileField(
         "Фоновое изображение", validators=[FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения!")]
     )
     submit = SubmitField("Сохранить настройки")

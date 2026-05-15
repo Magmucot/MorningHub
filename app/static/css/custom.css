@@ -224,3 +224,18 @@ body[data-theme="dark"] .news-item a {
 body[data-theme="dark"] .text-muted {
     color: var(--text-muted) !important;
 }
+
+/* Mobile Adaptation */
+@media (max-width: 768px) {
+    .currency-value {
+        font-size: 1.25rem;
+    }
+    .analog-clock {
+        width: 100px;
+        height: 100px;
+        border-width: 4px;
+    }
+    .cal-cell {
+        font-size: 0.8rem;
+    }
+}

@@ -95,9 +95,9 @@ def settings():
             db.session.commit()
             flash("Настройки успешно обновлены.", "success")
 
-            if form.background_image.data:
+            if form.fon_img.data:
                 try:
-                    imya_f = sohr_fon_img(form.background_image.data)
+                    imya_f = sohr_fon_img(form.fon_img.data)
                     if imya_f:
                         current_user.fon_img = imya_f
                         db.session.commit()

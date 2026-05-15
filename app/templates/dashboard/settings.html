@@ -14,21 +14,21 @@
                     {% for widget in widgets %}
                     <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
                         <div>
-                            {% if widget.widget_type == 'currency' %}💰 Курсы Валют{% endif %}
-                            {% if widget.widget_type == 'it_news' %}💻 IT Новости{% endif %}
-                            {% if widget.widget_type == 'politics' %}🏛 Политика{% endif %}
-                            {% if widget.widget_type == 'ai_models' %}🤖 AI Модели{% endif %}
-                            {% if widget.widget_type == 'ai_summary' %}✨ ИИ-Сводка Новостей{% endif %}
-                            {% if widget.widget_type == 'analog_clock' %}⏰ Аналоговые Часы{% endif %}
-                            {% if widget.widget_type == 'calendar' %}📅 Календарь{% endif %}
-                            {% if widget.widget_type == 'weather' %}⛅ Погода{% endif %}
-                            {% if widget.widget_type == 'bookmarks' %}🔗 Закладки{% endif %}
-                            {% if widget.widget_type == 'crypto' %}🪙 Криптовалюты{% endif %}
+                            {% if widget.w_tip == 'currency' %}💰 Курсы Валют{% endif %}
+                            {% if widget.w_tip == 'it_news' %}💻 IT Новости{% endif %}
+                            {% if widget.w_tip == 'politics' %}🏛 Политика{% endif %}
+                            {% if widget.w_tip == 'ai_models' %}🤖 AI Модели{% endif %}
+                            {% if widget.w_tip == 'ai_summary' %}✨ ИИ-Сводка Новостей{% endif %}
+                            {% if widget.w_tip == 'analog_clock' %}⏰ Аналоговые Часы{% endif %}
+                            {% if widget.w_tip == 'calendar' %}📅 Календарь{% endif %}
+                            {% if widget.w_tip == 'weather' %}⛅ Погода{% endif %}
+                            {% if widget.w_tip == 'bookmarks' %}🔗 Закладки{% endif %}
+                            {% if widget.w_tip == 'crypto' %}🪙 Криптовалюты{% endif %}
                         </div>
                         <div class="form-check form-switch">
                             <input class="form-check-input widget-toggle" type="checkbox" role="switch" 
-                                   data-widget-type="{{ widget.widget_type }}" 
-                                   {% if widget.is_active %}checked{% endif %}>
+                                   data-widget-type="{{ widget.w_tip }}" 
+                                   {% if widget.is_akt %}checked{% endif %}>
                         </div>
                     </li>
                     {% endfor %}
@@ -50,18 +50,18 @@
                     <h6 class="border-bottom pb-2 mb-3">⛅ Погода</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Город</label>
-                        <input type="text" name="weather_city" class="form-control" value="{{ current_user.weather_city }}">
+                        <input type="text" name="weather_city" class="form-control" value="{{ current_user.pog_city }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🪙 Криптовалюты и Валюты</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Отслеживаемая криптовалюта (ID CoinGecko через запятую)</label>
-                        <input type="text" name="crypto_tracking" class="form-control" value="{{ current_user.crypto_tracking }}" placeholder="bitcoin,ethereum,the-open-network,solana">
+                        <input type="text" name="crypto_tracking" class="form-control" value="{{ current_user.crypto_spis }}" placeholder="bitcoin,ethereum,the-open-network,solana">
                         <div class="form-text" style="font-size: 0.7rem;">Например: bitcoin, ethereum, solana, the-open-network (до 10 шт)</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Отслеживаемые фиатные валюты (Коды через запятую)</label>
-                        <input type="text" name="currency_tracking" class="form-control" value="{{ current_user.currency_tracking }}" placeholder="USD,EUR,CNY,GBP">
+                        <input type="text" name="currency_tracking" class="form-control" value="{{ current_user.val_spis }}" placeholder="USD,EUR,CNY,GBP">
                         <div class="form-text" style="font-size: 0.7rem;">Например: USD, EUR, CNY (до 10 шт)</div>
                     </div>
 
@@ -110,9 +110,9 @@
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🖼 Внешний вид (Обои)</h6>
                     <div class="mb-3">
-                        {{ form.background_image.label(class="form-label text-muted small") }}
-                        {{ form.background_image(class="form-control") }}
-                        {% for error in form.background_image.errors %}
+                        {{ form.fon_img.label(class="form-label text-muted small") }}
+                        {{ form.fon_img(class="form-control") }}
+                        {% for error in form.fon_img.errors %}
                             <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
@@ -126,10 +126,6 @@
                 </form>
             </div>
         </div>
-    </div>
-</div>
-{% endblock %}
-  </div>
     </div>
 </div>
 {% endblock %}

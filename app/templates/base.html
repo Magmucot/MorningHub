@@ -13,16 +13,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
-<body {% if current_user.is_authenticated %}data-theme="{{ current_user.theme }}"{% endif %}>
+<body {% if current_user.is_authenticated %}data-theme="{{ current_user.tema }}"{% endif %}>
     {% if current_user.is_authenticated %}
     <style>
         :root {
-            --widget-bg-color: {{ current_user.widget_color }};
-            --widget-opacity: {{ current_user.widget_opacity }};
+            --widget-bg-color: {{ current_user.wid_cvet }};
+            --widget-opacity: {{ current_user.wid_prozr }};
         }
-        {% if current_user.background_image %}
+        {% if current_user.fon_img %}
         body {
-            background-image: url("{{ url_for('static', filename='uploads/' + current_user.background_image) }}");
+            background-image: url("{{ url_for('static', filename='uploads/' + current_user.fon_img) }}");
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -61,7 +61,7 @@
         </div>
     </nav>
 
-    <div class="container-fluid px-4 mt-4">
+    <div class="container-fluid px-2 px-md-4 mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
