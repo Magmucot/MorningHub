@@ -4,7 +4,7 @@
 if [ -d ".venv" ]; then
     source .venv/bin/activate
 else
-    echo "Virtual environment (.venv) not found. Please create it first."
+    echo "Virtual environment (.venv) не найдены. Создайте их сначала"
     exit 1
 fi
 
@@ -13,8 +13,8 @@ export SECRET_KEY=${SECRET_KEY:-$(openssl rand -hex 32)}
 export DB_URL=${DB_URL:-sqlite:///$(pwd)/db/morninghub_prod.db}
 export AI_API_KEY=${AI_API_KEY:-""}
 
-echo "Starting MorningHub in PRODUCTION mode..."
-echo "Db: $DB_URL"
+echo "Запуск MorningHub в PROD моде..."
+echo "База данных: $DB_URL"
 
 # База данных
 python -c "from app import create_app; from app.extensions import db; app = create_app('prod'); with app.app_context(): db.create_all()"
