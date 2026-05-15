@@ -8,7 +8,7 @@ class Bookmark(db.Model):
     __tablename__ = "bookmarks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    u_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, nullable=False)
+    usr_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, nullable=False)
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     url: Mapped[str] = mapped_column(String(255), nullable=False)
     icon: Mapped[str] = mapped_column(String(50), default="fa-link", nullable=False)

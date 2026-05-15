@@ -16,9 +16,9 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        u = User(u_name=form.username.data)
-        u.set_pass(form.password.data)
-        db.session.add(u)
+        usr = User(usr_name=form.username.data)
+        usr.set_pass(form.password.data)
+        db.session.add(usr)
         db.session.flush()
 
         wid_def = [
@@ -35,7 +35,7 @@ def register():
             "crypto",
         ]
         for idx, tip in enumerate(wid_def):
-            w = WidgetConfig(u_id=u.id, w_tip=tip, poz=idx, is_akt=True)
+            w = WidgetConfig(usr_id=usr.id, w_tip=tip, poz=idx, is_act=True)
             db.session.add(w)
 
         db.session.commit()
@@ -52,9 +52,9 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        u = User.query.filter_by(u_name=form.username.data).first()
-        if u and u.check_pass(form.password.data):
-            login_user(u)
+        usr = User.query.filter_by(u_name=form.username.data).first()
+        if usr and usr.check_pass(form.password.data):
+            login_user(usr)
             return redirect(url_for("dashboard.index"))
         flash("Неверное имя пользователя или пароль.", "danger")
 

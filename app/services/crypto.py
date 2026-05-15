@@ -18,6 +18,21 @@ KNOWN_CRYPTOS = {
     "notcoin": "NOT",
 }
 
+IPUT_NAMES = {
+    "btc": "bitcoin",
+    "eth": "ethereum",
+    "ton": "the-open-network",
+    "sol": "solana",
+    "bnb": "binancecoin",
+    "xrp": "ripple",
+    "doge": "dogecoin",
+    "ada": "cardano",
+    "trx": "tron",
+    "dot": "polkadot",
+    "ltc": "litecoin",
+    "not": "notcoin",
+}
+
 
 @cached(cache=TTLCache(maxsize=100, ttl=600))
 def get_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:

@@ -3,7 +3,7 @@ from app.services.it_news import get_it_news
 from app.services.politics import get_polit_news
 from app.services.uploader import sohr_fon_img
 from app.services.aggregator import sobr_summary_t
-from app.services.ai_models import get_ai_mod_news
+from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
 from app.services.weather import pog_prog
 from app.services.crypto import get_crypto_kurs
@@ -15,7 +15,7 @@ __all__ = [
     "get_polit_news",
     "sohr_fon_img",
     "sobr_summary_t",
-    "get_ai_mod_news",
+    "get_ai_models_news",
     "get_ai_summary",
     "pog_prog",
     "get_crypto_kurs",

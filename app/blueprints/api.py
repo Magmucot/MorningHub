@@ -4,15 +4,15 @@ from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.widget import WidgetConfig
 from app.models.bookmark import Bookmark
-from app.services.aggregator import sobr_svod_t
-from app.services.currency import poluch_val_kurs
-from app.services.it_news import it_nov
-from app.services.politics import polit_nov
-from app.services.ai_models import poluch_ai_mod_nov
-from app.services.ai_summary import poluch_ai_svod
-from app.services.weather import pog_prog
-from app.services.crypto import poluch_crypto_kurs
-from app.services.game_news import igry_nov
+from app.services.aggregator import sobr_summary_t
+from app.services.currency import get_val_kurs
+from app.services.it_news import get_it_news
+from app.services.politics import get_polit_news
+from app.services.ai_models import get_ai_models_news
+from app.services.ai_summary import get_ai_summary
+from app.services.weather import weath_prog
+from app.services.crypto import get_crypto_kurs
+from app.services.game_news import game_news
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
@@ -20,13 +20,13 @@ bp = Blueprint("api", __name__, url_prefix="/api/v1")
 @bp.route("/widgets/crypto", methods=["GET"])
 @login_required
 def api_crypto():
-    return jsonify(poluch_crypto_kurs(current_user.crypto_spis))
+    return jsonify(get_crypto_kurs(current_user.crypto_lst))
 
 
 @bp.route("/widgets/weather", methods=["GET"])
 @login_required
 def api_weather():
-    rez = pog_prog(current_user)
+    rez = weath_prog(current_user)
     # Если город был разрешен, сохраняем координаты
     db.session.commit()
     return jsonify(rez)
@@ -45,8 +45,8 @@ def api_bookmarks():
         db.session.commit()
         return jsonify({"success": True, "id": bm.id})
 
-    bm_spis = Bookmark.query.filter_by(u_id=current_user.id).all()
-    return jsonify([{"id": bm.id, "title": bm.title, "url": bm.url, "icon": bm.icon} for bm in bm_spis])
+    bm_lst = Bookmark.query.filter_by(u_id=current_user.id).all()
+    return jsonify([{"id": bm.id, "title": bm.title, "url": bm.url, "icon": bm.icon} for bm in bm_lst])
 
 
 @bp.route("/bookmarks/<int:bm_id>", methods=["DELETE"])
@@ -67,8 +67,8 @@ def save_grid_widgets():
     if not d or "items" not in d:
         return jsonify({"error": "Invalid payload"}), 400
 
-    wid_spis = WidgetConfig.query.filter_by(u_id=current_user.id).all()
-    wid_karta = {w.w_tip: w for w in wid_spis}
+    wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id).all()
+    wid_karta = {w.w_tip: w for w in wid_lst}
 
     for i in d["items"]:
         tip = i.get("widget_type")
@@ -86,7 +86,7 @@ def save_grid_widgets():
 @bp.route("/widgets/ai-summary", methods=["GET"])
 @login_required
 def api_ai_summary():
-    return jsonify(poluch_ai_svod(current_user))
+    return jsonify(get_ai_summary(current_user))
 
 
 @bp.route("/user/lock-grid", methods=["PATCH"])
@@ -104,31 +104,31 @@ def lock_grid():
 @bp.route("/widgets/ai-models", methods=["GET"])
 @login_required
 def api_ai_models():
-    return jsonify(poluch_ai_mod_nov())
+    return jsonify(get_ai_models_news())
 
 
 @bp.route("/widgets/it-news", methods=["GET"])
 @login_required
 def api_it_news():
-    return jsonify(it_nov())
+    return jsonify(get_it_news())
 
 
 @bp.route("/widgets/game-news", methods=["GET"])
 @login_required
 def api_game_news():
-    return jsonify(igry_nov())
+    return jsonify(game_news())
 
 
 @bp.route("/widgets/currency", methods=["GET"])
 @login_required
 def api_currency():
-    return jsonify(poluch_val_kurs(current_user.val_spis))
+    return jsonify(get_val_kurs(current_user.val_lst))
 
 
 @bp.route("/widgets/politics", methods=["GET"])
 @login_required
 def api_politics():
-    return jsonify(polit_nov())
+    return jsonify(get_polit_news())
 
 
 @bp.route("/widgets/<w_tip>/toggle", methods=["PATCH"])
@@ -153,11 +153,9 @@ def toggle_widget(w_tip: str):
 def export_summary():
     fmt = request.args.get("format", "txt")
 
-    akt_wid_spis = (
-        WidgetConfig.query.filter_by(u_id=current_user.id, is_akt=True).order_by(WidgetConfig.poz).all()
-    )
+    akt_wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id, is_akt=True).order_by(WidgetConfig.poz).all()
 
-    tekst = sobr_svod_t(akt_wid_spis)
+    tekst = sobr_summary_t(akt_wid_lst)
 
     if fmt == "txt":
         return Response(

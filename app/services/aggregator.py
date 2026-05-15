@@ -3,15 +3,15 @@ from app.models.widget import WidgetConfig
 from app.services.currency import get_val_kurs
 from app.services.it_news import get_it_news
 from app.services.politics import get_polit_news
-from app.services.ai_models import get_ai_mod_news
+from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
 from app.services.game_news import game_news
 
 
-def sobr_summary_t(akt_wid_spis: List[WidgetConfig]) -> str:
+def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
     summary: List[str] = ["=== Утренняя Сводка MorningHub ===\n"]
 
-    for w in akt_wid_spis:
+    for w in act_wid_lst:
         if w.w_tip == "ai_summary":
             summary.append("\n--- ИИ-Пересказ Новостей ---")
             rez = get_ai_summary(w.user)
@@ -51,7 +51,7 @@ def sobr_summary_t(akt_wid_spis: List[WidgetConfig]) -> str:
 
         elif w.w_tip == "ai_models":
             summary.append("\n--- AI Модели (Artificial Analysis) ---")
-            news_spis = get_ai_mod_news(lim=5)
+            news_spis = get_ai_models_news(lim=5)
             for n in news_spis:
                 if "error" in n:
                     summary.append(f"Ошибка: {n['error']}")

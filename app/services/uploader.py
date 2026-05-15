@@ -14,7 +14,7 @@ def _razresh_f(f_imya: str, mimetype: str) -> bool:
     return "." in f_imya and f_imya.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def sohr_fon_img(f: FileStorage) -> Optional[str]:
+def save_fon_img(f: FileStorage) -> Optional[str]:
     """Saves the file safely with UUID4 filename and returns it."""
     if not f or not f.filename:
         return None

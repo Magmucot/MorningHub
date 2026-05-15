@@ -47,10 +47,10 @@ def _get_city_geo(city: str) -> Tuple[float, float, str]:
 
 # Кеш на 1 час (3600 сек) для прогноза по координатам
 @cached(cache=TTLCache(maxsize=128, ttl=3600))
-def _get_pog(lat: float, lon: float) -> Dict[str, Any]:
-    pog_u = "https://api.open-meteo.com/v1/forecast"
+def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
+    weath_u = "https://api.open-meteo.com/v1/forecast"
     r = requests.get(
-        pog_u,
+        weath_u,
         params={
             "latitude": lat,
             "longitude": lon,
@@ -65,7 +65,7 @@ def _get_pog(lat: float, lon: float) -> Dict[str, Any]:
     payload = r.json()
     daily = payload["daily"]
     hourly = payload["hourly"]
-    pog_kod = daily["weathercode"][0]
+    weath_kod = daily["weathercode"][0]
 
     # Берем температуры на следующие 12 часов (начиная с текущего времени примерно)
     import datetime
@@ -77,7 +77,7 @@ def _get_pog(lat: float, lon: float) -> Dict[str, Any]:
 
     return {
         "date": daily["time"][0],
-        "description": WEATHER_CODES.get(pog_kod, "❓ Неизвестно"),
+        "description": WEATHER_CODES.get(weath_kod, "❓ Неизвестно"),
         "temp_max": daily["temperature_2m_max"][0],
         "temp_min": daily["temperature_2m_min"][0],
         "precipitation_probability": daily["precipitation_probability_max"][0],
@@ -86,22 +86,22 @@ def _get_pog(lat: float, lon: float) -> Dict[str, Any]:
     }
 
 
-def pog_prog(u: User) -> Dict[str, Any]:
+def weath_prog(u: User) -> Dict[str, Any]:
     """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
     try:
-        lat = u.pog_lat
-        lon = u.pog_lon
-        g_name = u.pog_city
+        lat = u.weath_lat
+        lon = u.weath_lon
+        g_name = u.weath_city
 
         if lat is None or lon is None:
-            lat, lon, g_name = _get_city_geo(u.pog_city)
-            u.pog_lat = lat
-            u.pog_lon = lon
-            u.pog_city = g_name
+            lat, lon, g_name = _get_city_geo(u.weath_city)
+            u.weath_lat = lat
+            u.weath_lon = lon
+            u.weath_city = g_name
             # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
             # но обновляем объект.
 
-        d = _get_pog(lat, lon)
+        d = _get_weath(lat, lon)
         d["city"] = g_name
         return d
     except Exception as e:

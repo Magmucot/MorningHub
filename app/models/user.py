@@ -13,33 +13,33 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    u_name: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    usr_name: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
     pass_hash: Mapped[str] = mapped_column(String(256), nullable=False)
-    fon_img: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    back_img: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=False)
 
     # Погода
-    pog_gorod: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
-    pog_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
-    pog_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
+    weath_gorod: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
+    weath_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
+    weath_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
     # AI
-    ai_kluch: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    ai_key: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ai_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    ai_mod: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    ai_model: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
 
     # UI
     setka_lock: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    tema: Mapped[str] = mapped_column(String(20), default="light", nullable=False)
+    theme: Mapped[str] = mapped_column(String(20), default="light", nullable=False)
     wid_cvet: Mapped[str] = mapped_column(String(20), default="#ffffff", nullable=False)
     wid_prozr: Mapped[float] = mapped_column(nullable=False, default=0.95)
 
     # Виджеты
-    kripta_spis: Mapped[str] = mapped_column(
+    crypto_lst: Mapped[str] = mapped_column(
         String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False
     )
-    valuta_spis: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
-    chas_stil: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
+    val_lst: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
+    clock_stile: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
 
     widgets: Mapped[List["WidgetConfig"]] = relationship(
         "WidgetConfig",
@@ -60,4 +60,4 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.pass_hash, password)
 
     def __repr__(self) -> str:
-        return f"<User {self.u_name}>"
+        return f"<User {self.usr_name}>"
