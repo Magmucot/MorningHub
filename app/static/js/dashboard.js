@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (kon_setka && typeof GridStack !== 'undefined') {
         const is_lock = kon_setka.getAttribute('data-locked') === 'true';
         setka = GridStack.init({
-            cellHeight: 70,
+            cellHeight: 50,
             margin: 8,
             disableOneColumnMode: false,
             float: true,

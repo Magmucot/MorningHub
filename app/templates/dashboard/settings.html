@@ -28,7 +28,7 @@
                         </div>
                         <div class="form-check form-switch">
                             <input class="form-check-input widget-toggle" type="checkbox" role="switch"
-                                data-widget-type="{{ widget.w_tip }}" {% if widget.is_akt %}checked{% endif %}>
+                                data-widget-type="{{ widget.w_tip }}" {% if widget.is_act %}checked{% endif %}>
                         </div>
                     </li>
                     {% endfor %}
@@ -49,7 +49,7 @@
                     <h6 class="border-bottom pb-2 mb-3">⛅ Погода</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Город</label>
-                        <input type="text" name="weather_city" class="form-control" value="{{ current_user.pog_city }}">
+                        <input type="text" name="weather_city" class="form-control" value="{{ current_user.weath_gorod }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🪙 Криптовалюты и Валюты</h6>
@@ -57,7 +57,7 @@
                         <label class="form-label text-muted small">Отслеживаемая криптовалюта (ID CoinGecko через
                             запятую)</label>
                         <input type="text" name="crypto_tracking" class="form-control"
-                            value="{{ current_user.crypto_spis }}"
+                            value="{{ current_user.crypto_lst }}"
                             placeholder="bitcoin,ethereum,the-open-network,solana">
                         <div class="form-text" style="font-size: 0.7rem;">Например: bitcoin, ethereum, solana,
                             the-open-network (до 10 шт)</div>
@@ -66,7 +66,7 @@
                         <label class="form-label text-muted small">Отслеживаемые фиатные валюты (Коды через
                             запятую)</label>
                         <input type="text" name="currency_tracking" class="form-control"
-                            value="{{ current_user.val_spis }}" placeholder="USD,EUR,CNY,GBP">
+                            value="{{ current_user.val_lst }}" placeholder="USD,EUR,CNY,GBP">
                         <div class="form-text" style="font-size: 0.7rem;">Например: USD, EUR, CNY (до 10 шт)</div>
                     </div>
 
@@ -74,11 +74,11 @@
                     <div class="mb-3">
                         <label class="form-label text-muted small">Стиль часов</label>
                         <select name="clock_style" class="form-select">
-                            <option value="both" {% if current_user.chas_stil=='both' %}selected{% endif %}>Аналоговые и
+                            <option value="both" {% if current_user.clock_stile=='both' %}selected{% endif %}>Аналоговые и
                                 Цифровые</option>
-                            <option value="analog" {% if current_user.chas_stil=='analog' %}selected{% endif %}>Только
+                            <option value="analog" {% if current_user.clock_stile=='analog' %}selected{% endif %}>Только
                                 Аналоговые</option>
-                            <option value="digital" {% if current_user.chas_stil=='digital' %}selected{% endif %}>Только
+                            <option value="digital" {% if current_user.clock_stile=='digital' %}selected{% endif %}>Только
                                 Цифровые</option>
                         </select>
                     </div>
@@ -98,16 +98,16 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Имя модели (Оставьте пустым для дефолтной)</label>
-                        <input type="text" name="ai_model" class="form-control" value="{{ current_user.ai_mod or '' }}">
+                        <input type="text" name="ai_model" class="form-control" value="{{ current_user.ai_model or '' }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🎨 Кастомизация интерфейса</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Тема оформления</label>
                         <select name="theme" class="form-select">
-                            <option value="light" {% if current_user.tema=='light' %}selected{% endif %}>Светлая
+                            <option value="light" {% if current_user.theme=='light' %}selected{% endif %}>Светлая
                             </option>
-                            <option value="dark" {% if current_user.tema=='dark' %}selected{% endif %}>Темная</option>
+                            <option value="dark" {% if current_user.theme=='dark' %}selected{% endif %}>Темная</option>
                         </select>
                     </div>
                     <div class="row">
@@ -131,9 +131,9 @@
                         <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
-                    {% if current_user.fon_img %}
+                    {% if current_user.back_img %}
                     <div class="mb-3 text-center">
-                        <img src="{{ url_for('static', filename='uploads/' + current_user.fon_img) }}" alt="Фон"
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.back_img) }}" alt="Фон"
                             class="img-thumbnail" style="max-height: 100px;">
                     </div>
                     {% endif %}
@@ -144,4 +144,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}k %}

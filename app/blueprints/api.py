@@ -142,10 +142,10 @@ def toggle_widget(w_tip: str):
     if not d or "is_active" not in d:
         return jsonify({"error": "Invalid payload"}), 400
 
-    w.is_akt = bool(d["is_active"])
+    w.is_act = bool(d["is_active"])
     db.session.commit()
 
-    return jsonify({"success": True, "is_active": w.is_akt})
+    return jsonify({"success": True, "is_active": w.is_act})
 
 
 @bp.route("/export", methods=["GET"])
@@ -153,7 +153,7 @@ def toggle_widget(w_tip: str):
 def export_summary():
     fmt = request.args.get("format", "txt")
 
-    akt_wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id, is_akt=True).order_by(WidgetConfig.poz).all()
+    akt_wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id, is_act=True).order_by(WidgetConfig.poz).all()
 
     tekst = sobr_summary_t(akt_wid_lst)
 

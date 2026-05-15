@@ -77,8 +77,7 @@
                 {% endif %}
 
                 {% if widget.w_tip == 'analog_clock' %}
-                <div class="clock-container d-flex flex-column justify-content-center align-items-center flex-grow-1"
-                    data-clock-style="{{ current_user.chas_stil }}">
+                <div class="clock-container d-flex flex-column justify-content-center align-items-center flex-grow-1" data-clock-style="{{ current_user.clock_stile }}">
                     <div class="analog-clock mb-2">
                         <div class="hand hour-hand" id="hourHand"></div>
                         <div class="hand minute-hand" id="minuteHand"></div>
@@ -104,4 +103,5 @@
     </div>
     {% endfor %}
 </div>
+{% endblock %}>
 {% endblock %}

@@ -37,11 +37,11 @@
         }
 
             {
-            % if current_user.fon_img %
+            % if current_user.back_img %
         }
 
         body {
-            background-image: url("{{ url_for('static', filename='uploads/' + current_user.fon_img) }}");
+            background-image: url("{{ url_for('static', filename='uploads/' + current_user.back_img) }}");
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
@@ -68,8 +68,7 @@
                         <a class="nav-link" href="{{ url_for('dashboard.settings') }}">Настройки</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Выйти ({{
-                            current_user.u_name }})</a>
+                        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Выйти ({{ current_user.usr_name }})</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
