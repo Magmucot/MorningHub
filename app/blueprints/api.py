@@ -12,7 +12,7 @@ from app.services.ai_models import get_ai_models_news
 from app.services.ai_summary import get_ai_summary
 from app.services.weather import weath_prog
 from app.services.crypto import get_crypto_kurs
-from app.services.game_news import game_news
+from app.services.game_news import get_game_news
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
@@ -26,33 +26,33 @@ def api_crypto():
 @bp.route("/widgets/weather", methods=["GET"])
 @login_required
 def api_weather():
-    rez = weath_prog(current_user)
+    res = weath_prog(current_user)
     # Если город был разрешен, сохраняем координаты
     db.session.commit()
-    return jsonify(rez)
+    return jsonify(res)
 
 
 @bp.route("/bookmarks", methods=["GET", "POST"])
 @login_required
 def api_bookmarks():
     if request.method == "POST":
-        d = request.get_json()
-        if not d or not d.get("url") or not d.get("title"):
+        data = request.get_json()
+        if not data or not data.get("url") or not data.get("title"):
             return jsonify({"error": "Требуется title и url"}), 400
 
-        bm = Bookmark(u_id=current_user.id, title=d["title"], url=d["url"], icon=d.get("icon", "fa-link"))
+        bm = Bookmark(usr_id=current_user.id, title=data["title"], url=data["url"], icon=data.get("icon", "fa-link"))
         db.session.add(bm)
         db.session.commit()
         return jsonify({"success": True, "id": bm.id})
 
-    bm_lst = Bookmark.query.filter_by(u_id=current_user.id).all()
+    bm_lst = Bookmark.query.filter_by(ust_id=current_user.id).all()
     return jsonify([{"id": bm.id, "title": bm.title, "url": bm.url, "icon": bm.icon} for bm in bm_lst])
 
 
 @bp.route("/bookmarks/<int:bm_id>", methods=["DELETE"])
 @login_required
 def api_delete_bookmark(bm_id):
-    bm = Bookmark.query.filter_by(id=bm_id, u_id=current_user.id).first()
+    bm = Bookmark.query.filter_by(id=bm_id, usr_id=current_user.id).first()
     if not bm:
         return jsonify({"error": "Not found"}), 404
     db.session.delete(bm)
@@ -63,14 +63,14 @@ def api_delete_bookmark(bm_id):
 @bp.route("/widgets/save-grid", methods=["PATCH"])
 @login_required
 def save_grid_widgets():
-    d = request.get_json()
-    if not d or "items" not in d:
+    data = request.get_json()
+    if not data or "items" not in data:
         return jsonify({"error": "Invalid payload"}), 400
 
-    wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id).all()
+    wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id).all()
     wid_karta = {w.w_tip: w for w in wid_lst}
 
-    for i in d["items"]:
+    for i in data["items"]:
         tip = i.get("widget_type")
         if tip in wid_karta:
             w = wid_karta[tip]
@@ -92,11 +92,11 @@ def api_ai_summary():
 @bp.route("/user/lock-grid", methods=["PATCH"])
 @login_required
 def lock_grid():
-    d = request.get_json()
-    if not d or "is_grid_locked" not in d:
+    data = request.get_json()
+    if not data or "is_grid_locked" not in data:
         return jsonify({"error": "Invalid payload"}), 400
 
-    current_user.setka_lock = bool(d["is_grid_locked"])
+    current_user.setka_lock = bool(data["is_grid_locked"])
     db.session.commit()
     return jsonify({"success": True, "is_grid_locked": current_user.setka_lock})
 
@@ -116,7 +116,7 @@ def api_it_news():
 @bp.route("/widgets/game-news", methods=["GET"])
 @login_required
 def api_game_news():
-    return jsonify(game_news())
+    return jsonify(get_game_news())
 
 
 @bp.route("/widgets/currency", methods=["GET"])
@@ -134,15 +134,15 @@ def api_politics():
 @bp.route("/widgets/<w_tip>/toggle", methods=["PATCH"])
 @login_required
 def toggle_widget(w_tip: str):
-    w = WidgetConfig.query.filter_by(u_id=current_user.id, w_tip=w_tip).first()
+    w = WidgetConfig.query.filter_by(usr_id=current_user.id, w_tip=w_tip).first()
     if not w:
         return jsonify({"error": "Widget not found"}), 404
 
-    d = request.get_json()
-    if not d or "is_active" not in d:
+    data = request.get_json()
+    if not data or "is_active" not in data:
         return jsonify({"error": "Invalid payload"}), 400
 
-    w.is_act = bool(d["is_active"])
+    w.is_act = bool(data["is_active"])
     db.session.commit()
 
     return jsonify({"success": True, "is_active": w.is_act})
@@ -153,9 +153,9 @@ def toggle_widget(w_tip: str):
 def export_summary():
     fmt = request.args.get("format", "txt")
 
-    akt_wid_lst = WidgetConfig.query.filter_by(u_id=current_user.id, is_act=True).order_by(WidgetConfig.poz).all()
+    act_wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id, is_act=True).order_by(WidgetConfig.poz).all()
 
-    tekst = sobr_summary_t(akt_wid_lst)
+    tekst = sobr_summary_t(act_wid_lst)
 
     if fmt == "txt":
         return Response(

@@ -59,8 +59,8 @@ def settings():
             # Обработка города погоды
             if "weather_city" in request.form:
                 g = request.form.get("weather_city", "").strip()
-                if g and g != current_user.weath_gorod:
-                    current_user.weath_gorod = g
+                if g and g != current_user.weath_city:
+                    current_user.weath_city = g
                     current_user.weath_lat = None
                     current_user.weath_lon = None
 

@@ -4,6 +4,7 @@ from cachetools import TTLCache, cached
 from typing import Dict, Any
 from dotenv import load_dotenv
 from app.services.it_news import get_it_news
+from app.services.game_news import get_game_news
 from app.services.politics import get_polit_news
 from app.services.ai_models import get_ai_models_news
 
