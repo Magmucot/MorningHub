@@ -17,39 +17,21 @@
 
 <body {% if current_user.is_authenticated %}data-theme="{{ current_user.theme }}" {% endif %}>
     {% if current_user.is_authenticated %}
-    <style>
-        :root {
-            --widget-bg-color: {
-                    {
-                    current_user.wid_cvet
-                }
-            }
-
-            ;
-
-            --widget-opacity: {
-                    {
-                    current_user.wid_prozr
-                }
-            }
-
-            ;
-        }
-
-            {
-            % if current_user.back_img %
-        }
-
-        body {
-            background-image: url("{{ url_for('static', filename='uploads/' + current_user.back_img) }}");
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-        }
-
-            {
-            % endif %
-        }
+<style>
+    :root {
+        --widget-bg-color: {{ current_user.wid_cvet }};
+        --widget-opacity: {{ current_user.wid_prozr }};
+    }
+    {% if current_user.back_img %}
+    body {
+        background-image: url("{{ url_for('static', filename='uploads/' + current_user.back_img) }}");
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+    }
+    {% endif %}
+</style>
+{% endif %}
     </style>
     {% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">

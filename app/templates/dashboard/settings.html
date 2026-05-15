@@ -1,34 +1,48 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="row">
-
     <div class="col-md-6 mb-4">
         <div class="card shadow-sm settings-card">
             <div class="card-header bg-white fw-bold">
                 ⚙️ Управление виджетами
             </div>
             <div class="card-body">
-                <p class="text-muted small">Включите нужные вам блоки для отображения на главном экране.</p>
+                <p class="text-muted small">
+                    Включите нужные вам блоки для отображения на главном экране.
+                </p>
                 <ul class="list-group list-group-flush">
                     {% for widget in widgets %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                    <li
+                        class="list-group-item d-flex justify-content-between align-items-center bg-transparent"
+                    >
                         <div>
-                            {% if widget.w_tip == 'currency' %}💰 Курсы Валют{% endif %}
-                            {% if widget.w_tip == 'it_news' %}💻 IT Новости{% endif %}
-                            {% if widget.w_tip == 'game_news' %}🎮 Игровые Новости{% endif %}
-                            {% if widget.w_tip == 'politics' %}🏛 Политика{% endif %}
-                            {% if widget.w_tip == 'ai_models' %}🤖 AI Модели{% endif %}
-                            {% if widget.w_tip == 'ai_summary' %}✨ ИИ-Сводка Новостей{% endif %}
-                            {% if widget.w_tip == 'analog_clock' %}⏰ Аналоговые Часы{% endif %}
-                            {% if widget.w_tip == 'calendar' %}📅 Календарь{% endif %}
-                            {% if widget.w_tip == 'weather' %}⛅ Погода{% endif %}
-                            {% if widget.w_tip == 'bookmarks' %}🔗 Закладки{% endif %}
-                            {% if widget.w_tip == 'crypto' %}🪙 Криптовалюты{% endif %}
+                            {% if widget.w_tip == 'currency' %}💰 Курсы Валют{%
+                            endif %} {% if widget.w_tip == 'it_news' %}💻 IT
+                            Новости{% endif %} {% if widget.w_tip == 'game_news'
+                            %}🎮 Игровые Новости{% endif %} {% if widget.w_tip
+                            == 'politics' %}🏛 Политика{% endif %} {% if
+                            widget.w_tip == 'ai_models' %}🤖 AI Модели{% endif
+                            %} {% if widget.w_tip == 'ai_summary' %}✨ ИИ-Сводка
+                            Новостей{% endif %} {% if widget.w_tip ==
+                            'analog_clock' %}⏰ Аналоговые Часы{% endif %} {% if
+                            widget.w_tip == 'calendar' %}📅 Календарь{% endif %}
+                            {% if widget.w_tip == 'weather' %}⛅ Погода{% endif
+                            %} {% if widget.w_tip == 'bookmarks' %}🔗 Закладки{%
+                            endif %} {% if widget.w_tip == 'crypto' %}🪙
+                            Криптовалюты{% endif %}
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input widget-toggle" type="checkbox" role="switch"
-                                data-widget-type="{{ widget.w_tip }}" {% if widget.is_act %}checked{% endif %}>
+                            <input
+                                class="form-check-input widget-toggle"
+                                type="checkbox"
+                                role="switch"
+                                data-widget-type="{{ widget.w_tip }}"
+                                {%
+                                if
+                                widget.is_act
+                                %}checked{%
+                                endif
+                                %}
+                            />
                         </div>
                     </li>
                     {% endfor %}
@@ -49,100 +63,226 @@
                     <h6 class="border-bottom pb-2 mb-3">⛅ Погода</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Город</label>
-                        <input type="text" name="weather_city" class="form-control"
-                            value="{{ current_user.weath_city }}">
+                        <input
+                            type="text"
+                            name="weather_city"
+                            class="form-control"
+                            value="{{ current_user.weath_city }}"
+                        />
                     </div>
 
-                    <h6 class="border-bottom pb-2 mt-4 mb-3">🪙 Криптовалюты и Валюты</h6>
+                    <h6 class="border-bottom pb-2 mt-4 mb-3">
+                        🪙 Криптовалюты и Валюты
+                    </h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Отслеживаемая криптовалюта (ID CoinGecko через
-                            запятую)</label>
-                        <input type="text" name="crypto_tracking" class="form-control"
+                        <label class="form-label text-muted small"
+                            >Отслеживаемая криптовалюта (ID CoinGecko через
+                            запятую)</label
+                        >
+                        <input
+                            type="text"
+                            name="crypto_tracking"
+                            class="form-control"
                             value="{{ current_user.crypto_lst }}"
-                            placeholder="bitcoin,ethereum,the-open-network,solana">
-                        <div class="form-text" style="font-size: 0.7rem;">Например: bitcoin, ethereum, solana,
-                            the-open-network (до 10 шт)</div>
+                            placeholder="bitcoin,ethereum,the-open-network,solana"
+                        />
+                        <div class="form-text" style="font-size: 0.7rem">
+                            Например: bitcoin, ethereum, solana,
+                            the-open-network (до 10 шт)
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Отслеживаемые фиатные валюты (Коды через
-                            запятую)</label>
-                        <input type="text" name="currency_tracking" class="form-control"
-                            value="{{ current_user.val_lst }}" placeholder="USD,EUR,CNY,GBP">
-                        <div class="form-text" style="font-size: 0.7rem;">Например: USD, EUR, CNY (до 10 шт)</div>
+                        <label class="form-label text-muted small"
+                            >Отслеживаемые фиатные валюты (Коды через
+                            запятую)</label
+                        >
+                        <input
+                            type="text"
+                            name="currency_tracking"
+                            class="form-control"
+                            value="{{ current_user.val_lst }}"
+                            placeholder="USD,EUR,CNY,GBP"
+                        />
+                        <div class="form-text" style="font-size: 0.7rem">
+                            Например: USD, EUR, CNY (до 10 шт)
+                        </div>
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">⏰ Часы</h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Стиль часов</label>
+                        <label class="form-label text-muted small"
+                            >Стиль часов</label
+                        >
                         <select name="clock_style" class="form-select">
-                            <option value="both" {% if current_user.clock_stile=='both' %}selected{% endif %}>Аналоговые
-                                и
-                                Цифровые</option>
-                            <option value="analog" {% if current_user.clock_stile=='analog' %}selected{% endif %}>Только
-                                Аналоговые</option>
-                            <option value="digital" {% if current_user.clock_stile=='digital' %}selected{% endif %}>
-                                Только
-                                Цифровые</option>
+                            <option
+                                value="both"
+                                {%
+                                if
+                                current_user.clock_stile=""
+                                ="both"
+                                %}selected{%
+                                endif
+                                %}
+                            >
+                                Аналоговые и Цифровые
+                            </option>
+                            <option
+                                value="analog"
+                                {%
+                                if
+                                current_user.clock_stile=""
+                                ="analog"
+                                %}selected{%
+                                endif
+                                %}
+                            >
+                                Только Аналоговые
+                            </option>
+                            <option
+                                value="digital"
+                                {%
+                                if
+                                current_user.clock_stile=""
+                                ="digital"
+                                %}selected{%
+                                endif
+                                %}
+                            >
+                                Только Цифровые
+                            </option>
                         </select>
                     </div>
 
-                    <h6 class="border-bottom pb-2 mt-4 mb-3">✨ Настройки ИИ (Сводка)</h6>
+                    <h6 class="border-bottom pb-2 mt-4 mb-3">
+                        ✨ Настройки ИИ (Сводка)
+                    </h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">OpenAI API Key (Оставьте пустым для ключа из
-                            .env)</label>
-                        <input type="password" name="ai_api_key" class="form-control" autocomplete="new-password"
-                            value="{{ current_user.ai_key or '' }}">
+                        <label class="form-label text-muted small"
+                            >OpenAI API Key (Оставьте пустым для ключа из
+                            .env)</label
+                        >
+                        <input
+                            type="password"
+                            name="ai_api_key"
+                            class="form-control"
+                            autocomplete="new-password"
+                            value="{{ current_user.ai_key or '' }}"
+                        />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Base URL (Ссылка на платформу, оставьте пустой для
-                            OpenAI)</label>
-                        <input type="text" name="ai_base_url" class="form-control"
-                            value="{{ current_user.ai_url or '' }}" placeholder="https://api.openai.com/v1">
+                        <label class="form-label text-muted small"
+                            >Base URL (Ссылка на платформу, оставьте пустой для
+                            OpenAI)</label
+                        >
+                        <input
+                            type="text"
+                            name="ai_base_url"
+                            class="form-control"
+                            value="{{ current_user.ai_url or '' }}"
+                            placeholder="https://api.openai.com/v1"
+                        />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Имя модели (Оставьте пустым для дефолтной)</label>
-                        <input type="text" name="ai_model" class="form-control"
-                            value="{{ current_user.ai_model or '' }}">
+                        <label class="form-label text-muted small"
+                            >Имя модели (Оставьте пустым для дефолтной)</label
+                        >
+                        <input
+                            type="text"
+                            name="ai_model"
+                            class="form-control"
+                            value="{{ current_user.ai_model or '' }}"
+                        />
                     </div>
 
-                    <h6 class="border-bottom pb-2 mt-4 mb-3">🎨 Кастомизация интерфейса</h6>
+                    <h6 class="border-bottom pb-2 mt-4 mb-3">
+                        🎨 Кастомизация интерфейса
+                    </h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Тема оформления</label>
+                        <label class="form-label text-muted small"
+                            >Тема оформления</label
+                        >
                         <select name="theme" class="form-select">
-                            <option value="light" {% if current_user.theme=='light' %}selected{% endif %}>Светлая
+                            <option
+                                value="light"
+                                {%
+                                if
+                                current_user.theme=""
+                                ="light"
+                                %}selected{%
+                                endif
+                                %}
+                            >
+                                Светлая
                             </option>
-                            <option value="dark" {% if current_user.theme=='dark' %}selected{% endif %}>Темная</option>
+                            <option
+                                value="dark"
+                                {%
+                                if
+                                current_user.theme=""
+                                ="dark"
+                                %}selected{%
+                                endif
+                                %}
+                            >
+                                Темная
+                            </option>
                         </select>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
-                            <label class="form-label text-muted small">Цвет виджетов</label>
-                            <input type="color" name="widget_color" class="form-control form-control-color w-100"
-                                value="{{ current_user.wid_cvet }}">
+                            <label class="form-label text-muted small"
+                                >Цвет виджетов</label
+                            >
+                            <input
+                                type="color"
+                                name="widget_color"
+                                class="form-control form-control-color w-100"
+                                value="{{ current_user.wid_cvet }}"
+                            />
                         </div>
                         <div class="col-6 mb-3">
-                            <label class="form-label text-muted small">Прозрачность</label>
-                            <input type="range" name="widget_opacity" class="form-range" min="0.1" max="1" step="0.05"
-                                value="{{ current_user.wid_prozr }}">
+                            <label class="form-label text-muted small"
+                                >Прозрачность</label
+                            >
+                            <input
+                                type="range"
+                                name="widget_opacity"
+                                class="form-range"
+                                min="0.1"
+                                max="1"
+                                step="0.05"
+                                value="{{ current_user.wid_prozr }}"
+                            />
                         </div>
                     </div>
 
-                    <h6 class="border-bottom pb-2 mt-4 mb-3">🖼 Внешний вид (Обои)</h6>
+                    <h6 class="border-bottom pb-2 mt-4 mb-3">
+                        🖼 Внешний вид (Обои)
+                    </h6>
                     <div class="mb-3">
-                        {{ form.fon_img.label(class="form-label text-muted small") }}
-                        {{ form.fon_img(class="form-control") }}
-                        {% for error in form.fon_img.errors %}
+                        {{ form.fon_img.label(class="form-label text-muted
+                        small") }} {{ form.fon_img(class="form-control") }} {%
+                        for error in form.fon_img.errors %}
                         <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
                     {% if current_user.back_img %}
                     <div class="mb-3 text-center">
-                        <img src="{{ url_for('static', filename='uploads/' + current_user.back_img) }}" alt="Фон"
-                            class="img-thumbnail" style="max-height: 100px;">
+                        <img
+                            src="{{ url_for('static', filename='uploads/' + current_user.back_img) }}"
+                            alt="Фон"
+                            class="img-thumbnail"
+                            style="max-height: 100px"
+                        />
                     </div>
                     {% endif %}
 
-                    <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Сохранить все настройки</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm w-100 mt-2"
+                    >
+                        Сохранить все настройки
+                    </button>
                 </form>
             </div>
         </div>
