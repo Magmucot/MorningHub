@@ -1,8 +1,9 @@
 annotated-types==0.7.0
 anyio==4.13.0
+asyncache==0.3.1
 beautifulsoup4==4.14.3
 blinker==1.9.0
-cachetools==7.1.1
+cachetools==5.5.2
 certifi==2026.4.22
 charset-normalizer==3.4.7
 click==8.3.3
