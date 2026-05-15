@@ -17,7 +17,13 @@ echo "Запуск MorningHub в PROD моде..."
 echo "База данных: $DB_URL"
 
 # База данных
-python -c "from app import create_app; from app.extensions import db; app = create_app('prod'); with app.app_context(): db.create_all()"
+python << EOF
+from app import create_app
+from app.extensions import db
+app = create_app('prod')
+with app.app_context():
+    db.create_all()
+EOF
 
 # Запуск Gunicorn
 # -w 4: 4 worker processes

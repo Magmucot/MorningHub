@@ -14,18 +14,19 @@ KNOWN_CRYPTOS = {
     "cardano": "ADA",
     "tron": "TRX",
     "polkadot": "DOT",
-    "litecoin": "LTC"
+    "litecoin": "LTC",
+    "notcoin": "NOT",
 }
 
-# Кэш на 10 минут (600 секунд)
+
 @cached(cache=TTLCache(maxsize=100, ttl=600))
 def poluch_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:
-    c_spis = [c.strip().lower() for c in crypto_spis_str.split(',') if c.strip()]
+    c_spis = [c.strip().lower() for c in crypto_spis_str.split(",") if c.strip()]
     if not c_spis:
         return {}
-    
+
     id_spis = ",".join(c_spis)
-    
+
     u = "https://api.coingecko.com/api/v3/simple/price"
     p = {"ids": id_spis, "vs_currencies": "usd", "include_24hr_change": "true"}
     try:
