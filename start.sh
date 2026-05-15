@@ -20,11 +20,20 @@ echo "Запуск MorningHub в PROD моде..."
 # База данных
 echo "База данных: $DB_URL"
 python << EOF
+import os
+
 from app import create_app
 from app.extensions import db
+
+db_url = os.environ["DB_URL"]
 app = create_app('prod')
 with app.app_context():
-    db.create_all()
+    if db_url.startswith("sqlite:///"):
+        db_path = db_url.replace("sqlite:///", "", 1)
+        if not os.path.exists(db_path):
+            db.create_all()
+    else:
+        db.create_all()
 EOF
 
 # Запуск Gunicorn

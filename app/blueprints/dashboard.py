@@ -10,6 +10,18 @@ from app.services.uploader import save_back_img
 bp = Blueprint("dashboard", __name__)
 
 
+def _normalize_widget_opacity(raw_value: str) -> float | None:
+    try:
+        value = float(raw_value)
+    except ValueError:
+        return None
+
+    if value > 1:
+        value /= 100
+
+    return max(0.1, min(1.0, value))
+
+
 def _prover_wid_def(usr_id: int):
     wid_def = [
         "it_news",
@@ -88,10 +100,9 @@ def settings():
 
             p = request.form.get("widget_opacity")
             if p:
-                try:
-                    current_user.wid_prozr = float(p)
-                except ValueError:
-                    pass
+                opacity = _normalize_widget_opacity(p)
+                if opacity is not None:
+                    current_user.wid_prozr = opacity
 
             db.session.commit()
             flash("Настройки успешно обновлены.", "success")

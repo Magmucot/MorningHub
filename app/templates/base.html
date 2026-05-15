@@ -20,7 +20,7 @@
 <style>
     :root {
         --widget-bg-color: {{ current_user.wid_cvet }};
-        --widget-opacity: {{ current_user.wid_prozr }};
+        --widget-opacity: {{ current_user.widget_opacity }};
     }
     {% if current_user.back_img %}
     body {
@@ -32,8 +32,6 @@
     {% endif %}
 </style>
 {% endif %}
-    </style>
-    {% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="{{ url_for('dashboard.index') }}">🌅 MorningHub</a>

@@ -59,5 +59,14 @@ class User(UserMixin, db.Model):
     def check_pass(self, password: str) -> bool:
         return check_password_hash(self.pass_hash, password)
 
+    @property
+    def widget_opacity(self) -> float:
+        value = self.wid_prozr
+        if value is None:
+            return 0.95
+        if value > 1:
+            return value / 100
+        return value
+
     def __repr__(self) -> str:
         return f"<User {self.usr_name}>"
