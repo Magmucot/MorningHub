@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=False)
 
     # Погода
-    weath_gorod: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
+    weath_city: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
     weath_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
     weath_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
