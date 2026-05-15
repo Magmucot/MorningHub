@@ -16,13 +16,12 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.flush()  # Получаем ID пользователя
+        u = User(u_name=form.username.data)
+        u.set_pass(form.password.data)
+        db.session.add(u)
+        db.session.flush()
 
-        # Добавляем стандартные виджеты по умолчанию
-        default_widgets = [
+        wid_def = [
             "it_news",
             "currency",
             "politics",
@@ -34,9 +33,9 @@ def register():
             "bookmarks",
             "crypto",
         ]
-        for idx, w_type in enumerate(default_widgets):
-            widget = WidgetConfig(user_id=user.id, widget_type=w_type, position=idx, is_active=True)
-            db.session.add(widget)
+        for idx, tip in enumerate(wid_def):
+            w = WidgetConfig(u_id=u.id, w_tip=tip, poz=idx, is_akt=True)
+            db.session.add(w)
 
         db.session.commit()
         flash("Регистрация успешна! Теперь вы можете войти.", "success")
