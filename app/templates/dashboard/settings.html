@@ -69,42 +69,42 @@
                     <div class="mb-3">
                         <label class="form-label text-muted small">Стиль часов</label>
                         <select name="clock_style" class="form-select">
-                            <option value="both" {% if current_user.clock_style == 'both' %}selected{% endif %}>Аналоговые и Цифровые</option>
-                            <option value="analog" {% if current_user.clock_style == 'analog' %}selected{% endif %}>Только Аналоговые</option>
-                            <option value="digital" {% if current_user.clock_style == 'digital' %}selected{% endif %}>Только Цифровые</option>
+                            <option value="both" {% if current_user.chas_stil == 'both' %}selected{% endif %}>Аналоговые и Цифровые</option>
+                            <option value="analog" {% if current_user.chas_stil == 'analog' %}selected{% endif %}>Только Аналоговые</option>
+                            <option value="digital" {% if current_user.chas_stil == 'digital' %}selected{% endif %}>Только Цифровые</option>
                         </select>
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">✨ Настройки ИИ (Сводка)</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">OpenAI API Key (Оставьте пустым для ключа из .env)</label>
-                        <input type="password" name="ai_api_key" class="form-control" autocomplete="new-password" value="{{ current_user.ai_api_key or '' }}">
+                        <input type="password" name="ai_api_key" class="form-control" autocomplete="new-password" value="{{ current_user.ai_key or '' }}">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Base URL (Ссылка на платформу, оставьте пустой для OpenAI)</label>
-                        <input type="text" name="ai_base_url" class="form-control" value="{{ current_user.ai_base_url or '' }}" placeholder="https://api.openai.com/v1">
+                        <input type="text" name="ai_base_url" class="form-control" value="{{ current_user.ai_url or '' }}" placeholder="https://api.openai.com/v1">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Имя модели (Оставьте пустым для дефолтной)</label>
-                        <input type="text" name="ai_model" class="form-control" value="{{ current_user.ai_model or '' }}">
+                        <input type="text" name="ai_model" class="form-control" value="{{ current_user.ai_mod or '' }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🎨 Кастомизация интерфейса</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Тема оформления</label>
                         <select name="theme" class="form-select">
-                            <option value="light" {% if current_user.theme == 'light' %}selected{% endif %}>Светлая</option>
-                            <option value="dark" {% if current_user.theme == 'dark' %}selected{% endif %}>Темная</option>
+                            <option value="light" {% if current_user.tema == 'light' %}selected{% endif %}>Светлая</option>
+                            <option value="dark" {% if current_user.tema == 'dark' %}selected{% endif %}>Темная</option>
                         </select>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label text-muted small">Цвет виджетов</label>
-                            <input type="color" name="widget_color" class="form-control form-control-color w-100" value="{{ current_user.widget_color }}">
+                            <input type="color" name="widget_color" class="form-control form-control-color w-100" value="{{ current_user.wid_cvet }}">
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label text-muted small">Прозрачность</label>
-                            <input type="range" name="widget_opacity" class="form-range" min="0.1" max="1" step="0.05" value="{{ current_user.widget_opacity }}">
+                            <input type="range" name="widget_opacity" class="form-range" min="0.1" max="1" step="0.05" value="{{ current_user.wid_prozr }}">
                         </div>
                     </div>
 
@@ -116,9 +116,9 @@
                             <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
-                    {% if current_user.background_image %}
+                    {% if current_user.fon_img %}
                         <div class="mb-3 text-center">
-                            <img src="{{ url_for('static', filename='uploads/' + current_user.background_image) }}" alt="Фон" class="img-thumbnail" style="max-height: 100px;">
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.fon_img) }}" alt="Фон" class="img-thumbnail" style="max-height: 100px;">
                         </div>
                     {% endif %}
 
@@ -126,6 +126,10 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>
+{% endblock %}
+  </div>
     </div>
 </div>
 {% endblock %}

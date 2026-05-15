@@ -1,232 +1,216 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Получение CSRF токена
-    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+    // Poluch CSRF tok
+    const meta_csrf = document.querySelector('meta[name="csrf-token"]');
+    const tok_csrf = meta_csrf ? meta_csrf.getAttribute('content') : null;
 
-    // Инициализация GridStack (Drag & Drop, Resize)
-    const container = document.querySelector('.grid-stack');
-    let grid;
-    if (container && typeof GridStack !== 'undefined') {
-        const isLocked = container.getAttribute('data-locked') === 'true';
-        grid = GridStack.init({
+    // GridStack (Drag & Drop, Resize)
+    const kon_setka = document.querySelector('.grid-stack');
+    let setka;
+    if (kon_setka && typeof GridStack !== 'undefined') {
+        const is_lock = kon_setka.getAttribute('data-locked') === 'true';
+        setka = GridStack.init({
             cellHeight: 100,
             margin: 10,
             disableOneColumnMode: false,
             float: true,
-            staticGrid: isLocked,
-            handle: '.drag-handle' // Перетаскивать можно только за шапку
+            staticGrid: is_lock,
+            handle: '.drag-handle'
         });
 
-        // Событие изменения позиций и размеров
-        grid.on('change', function (event, items) {
-            if (!items) return;
-            const newLayout = [];
-            grid.engine.nodes.forEach(node => {
-                const el = node.el;
-                const widgetCard = el.querySelector('.widget-card');
-                if (!widgetCard) return;
-                const widgetType = widgetCard.getAttribute('data-widget');
-                newLayout.push({
-                    widget_type: widgetType,
-                    x: node.x,
-                    y: node.y,
-                    w: node.w,
-                    h: node.h
+        setka.on('change', function (ev, i_spis) {
+            if (!i_spis) return;
+            const nov_layaut = [];
+            setka.engine.nodes.forEach(n => {
+                const el = n.el;
+                const wid_kart = el.querySelector('.widget-card');
+                if (!wid_kart) return;
+                const w_tip = wid_kart.getAttribute('data-widget');
+                nov_layaut.push({
+                    widget_type: w_tip,
+                    x: n.x,
+                    y: n.y,
+                    w: n.w,
+                    h: n.h
                 });
             });
 
-            // Отправляем новый порядок на бэкенд
-            if (csrfToken && newLayout.length > 0) {
+            if (tok_csrf && nov_layaut.length > 0) {
                 fetch('/api/v1/widgets/save-grid', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+                        'X-CSRFToken': tok_csrf
                     },
-                    body: JSON.stringify({ items: newLayout })
-                }).catch(err => console.error('Ошибка сохранения сетки:', err));
+                    body: JSON.stringify({ items: nov_layaut })
+                }).catch(err => console.error('Oshibka sohran setki:', err));
             }
         });
     }
 
-    const lockBtn = document.getElementById('lockGridBtn');
-    if (lockBtn && grid) {
-        lockBtn.addEventListener('click', () => {
-            const isCurrentlyLocked = container.getAttribute('data-locked') === 'true';
-            const willBeLocked = !isCurrentlyLocked;
+    const kn_lock = document.getElementById('lockGridBtn');
+    if (kn_lock && setka) {
+        kn_lock.addEventListener('click', () => {
+            const is_tek_lock = kon_setka.getAttribute('data-locked') === 'true';
+            const bud_lock = !is_tek_lock;
 
             fetch('/api/v1/user/lock-grid', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
+                    'X-CSRFToken': tok_csrf
                 },
-                body: JSON.stringify({ is_grid_locked: willBeLocked })
+                body: JSON.stringify({ is_grid_locked: bud_lock })
             })
                 .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        container.setAttribute('data-locked', data.is_grid_locked);
-                        grid.setStatic(data.is_grid_locked);
+                .then(d => {
+                    if (d.success) {
+                        kon_setka.setAttribute('data-locked', d.is_grid_locked);
+                        setka.setStatic(d.is_grid_locked);
 
-                        if (data.is_grid_locked) {
-                            lockBtn.className = 'btn btn-warning btn-sm shadow-sm me-2';
-                            lockBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Сетка зафиксирована</span>';
+                        if (d.is_grid_locked) {
+                            kn_lock.className = 'btn btn-warning btn-sm shadow-sm me-2';
+                            kn_lock.innerHTML = '<i class="fas fa-lock"></i> <span>Сетка зафиксирована</span>';
                         } else {
-                            lockBtn.className = 'btn btn-light btn-sm shadow-sm me-2';
-                            lockBtn.innerHTML = '<i class="fas fa-unlock"></i> <span>Зафиксировать сетку</span>';
+                            kn_lock.className = 'btn btn-light btn-sm shadow-sm me-2';
+                            kn_lock.innerHTML = '<i class="fas fa-unlock"></i> <span>Зафиксировать сетку</span>';
                         }
                     }
                 });
         });
     }
 
-    // 1. Логика загрузки виджетов на главном экране (Fetch API)
-    const widgetCards = document.querySelectorAll('.widget-card');
+    const wid_kart_spis = document.querySelectorAll('.widget-card');
 
-    widgetCards.forEach(card => {
-        const type = card.getAttribute('data-widget');
-        const contentDiv = card.querySelector('.widget-content');
+    wid_kart_spis.forEach(k => {
+        const tip = k.getAttribute('data-widget');
+        const div_kon = k.querySelector('.widget-content');
 
-        // Маппинг URL'ов
-        let url = '';
-        if (type === 'currency') url = '/api/v1/widgets/currency';
-        if (type === 'it_news') url = '/api/v1/widgets/it-news';
-        if (type === 'politics') url = '/api/v1/widgets/politics';
-        if (type === 'ai_models') url = '/api/v1/widgets/ai-models';
-        if (type === 'ai_summary') url = '/api/v1/widgets/ai-summary';
-        if (type === 'weather') url = '/api/v1/widgets/weather';
+        let u = '';
+        if (tip === 'currency') u = '/api/v1/widgets/currency';
+        if (tip === 'it_news') u = '/api/v1/widgets/it-news';
+        if (tip === 'politics') u = '/api/v1/widgets/politics';
+        if (tip === 'ai_models') u = '/api/v1/widgets/ai-models';
+        if (tip === 'ai_summary') u = '/api/v1/widgets/ai-summary';
+        if (tip === 'weather') u = '/api/v1/widgets/weather';
+        if (tip === 'crypto') u = '/api/v1/widgets/crypto';
 
-        if (url) {
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    renderWidget(type, data, contentDiv);
+        if (u) {
+            fetch(u)
+                .then(r => r.json())
+                .then(d => {
+                    risuy_wid(tip, d, div_kon);
                 })
-                .catch(error => {
-                    const errorMsg = error.message ? error.message : String(error);
-                    const el = contentDiv.querySelector('.loading-indicator');
+                .catch(err => {
+                    const err_m = err.message ? err.message : String(err);
+                    const el = div_kon.querySelector('.loading-indicator');
                     if (el) {
-                        el.innerHTML = `<div class="text-danger small">Ошибка загрузки: ${errorMsg}</div>`;
+                        el.innerHTML = `<div class="text-danger small">Ошибка загрузки: ${err_m}</div>`;
                     }
                 });
-        } else if (type === 'analog_clock') {
-            initAnalogClock();
-        } else if (type === 'calendar') {
-            initCalendar();
-        } else if (type === 'bookmarks') {
-            initBookmarks(contentDiv);
+        } else if (tip === 'analog_clock') {
+            init_chas(div_kon);
+        } else if (tip === 'calendar') {
+            init_cal();
+        } else if (tip === 'bookmarks') {
+            init_bm(div_kon);
         }
     });
 
-    // Хранилище для инстансов Chart.js чтобы уничтожать старые при обновлении
-    window.widgetCharts = window.widgetCharts || {};
+    window.wid_graf_spis = window.wid_graf_spis || {};
 
-    function renderWidget(type, data, container) {
-        if (data.error) {
-            const el = container.querySelector('.loading-indicator');
-            if (el) el.innerHTML = `<div class="text-danger small">Ошибка: ${data.error}</div>`;
+    function risuy_wid(tip, d, kon) {
+        if (d.error) {
+            const el = kon.querySelector('.loading-indicator');
+            if (el) el.innerHTML = `<div class="text-danger small">Ошибка: ${d.error}</div>`;
             return;
         }
 
         let html = '';
 
-        if (type === 'ai_summary') {
-            const parsedSummary = typeof marked !== 'undefined' ? marked.parse(data.summary) : data.summary;
+        if (tip === 'ai_summary') {
+            const par_svod = typeof marked !== 'undefined' ? marked.parse(d.summary) : d.summary;
             html = `
-                <div class="text-muted small p-1 ai-summary-content" style="line-height: 1.4;">${parsedSummary}</div>
+                <div class="text-muted small p-1 ai-summary-content" style="line-height: 1.4;">${par_svod}</div>
                 <div class="text-end mt-2"><a href="https://artificialanalysis.ai/models" target="_blank" class="small text-decoration-none">Источник ИИ: Artificial Analysis</a></div>
             `;
         }
-        else if (type === 'currency') {
-            html = `
-                <div class="d-flex justify-content-around mt-2">
-                    <div class="text-center">
-                        <span class="text-muted d-block small">USD</span>
-                        <span class="currency-value">${data.USD.current} ₽</span>
-                        <small class="${data.USD.current >= data.USD.previous ? 'text-danger' : 'text-success'}">
-                            ${data.USD.current >= data.USD.previous ? '▲' : '▼'} ${Math.abs(data.USD.current - data.USD.previous).toFixed(2)}
+        else if (tip === 'currency') {
+            html = '<div class="d-flex flex-wrap justify-content-around mt-2">';
+            const val_kluch_spis = Object.keys(d).filter(k => k !== 'date');
+            val_kluch_spis.forEach(k => {
+                const inf = d[k];
+                const diff = Math.abs(inf.current - inf.previous).toFixed(2);
+                const is_rost = inf.current >= inf.previous;
+                html += `
+                    <div class="text-center m-1">
+                        <span class="text-muted d-block small">${k}</span>
+                        <span class="currency-value">${inf.current} ₽</span>
+                        <small class="${is_rost ? 'text-danger' : 'text-success'}">
+                            ${is_rost ? '▲' : '▼'} ${diff}
                         </small>
                     </div>
-                    <div class="text-center">
-                        <span class="text-muted d-block small">EUR</span>
-                        <span class="currency-value">${data.EUR.current} ₽</span>
-                        <small class="${data.EUR.current >= data.EUR.previous ? 'text-danger' : 'text-success'}">
-                            ${data.EUR.current >= data.EUR.previous ? '▲' : '▼'} ${Math.abs(data.EUR.current - data.EUR.previous).toFixed(2)}
-                        </small>
-                    </div>
-                    <div class="text-center">
-                        <span class="text-muted d-block small">CNY</span>
-                        <span class="currency-value">${data.CNY.current} ₽</span>
-                        <small class="${data.CNY.current >= data.CNY.previous ? 'text-danger' : 'text-success'}">
-                            ${data.CNY.current >= data.CNY.previous ? '▲' : '▼'} ${Math.abs(data.CNY.current - data.CNY.previous).toFixed(2)}
-                        </small>
-                    </div>
-                </div>
+                `;
+            });
+            html += `</div>
                 <div class="mt-3 px-2" style="height: 100px; width: 100%;">
                     <canvas id="currencyChart"></canvas>
                 </div>
-                <div class="text-end text-muted mt-2" style="font-size: 0.7rem;">Обновлено: ${new Date(data.date).toLocaleDateString()}</div>
+                <div class="text-end text-muted mt-2" style="font-size: 0.7rem;">Обновлено: ${d.date ? new Date(d.date).toLocaleDateString() : 'N/A'}</div>
             `;
         }
-        else if (type === 'crypto') {
-            html = `
-                <div class="d-flex flex-wrap justify-content-around mt-2">
+        else if (tip === 'crypto') {
+            html = '<div class="d-flex flex-wrap justify-content-around mt-2">';
+            const cr_kluch_spis = Object.keys(d);
+            cr_kluch_spis.forEach(k => {
+                const inf = d[k];
+                html += `
                     <div class="text-center m-1">
-                        <span class="text-muted d-block small">BTC</span>
-                        <span class="currency-value fw-bold fs-5">$${data.BTC.price}</span>
-                        <span class="small d-block ${data.BTC.change >= 0 ? 'text-success' : 'text-danger'}">${data.BTC.change}%</span>
+                        <span class="text-muted d-block small">${k}</span>
+                        <span class="currency-value fw-bold fs-5">$${inf.price}</span>
+                        <span class="small d-block ${inf.change >= 0 ? 'text-success' : 'text-danger'}">${inf.change}%</span>
                     </div>
-                    <div class="text-center m-1">
-                        <span class="text-muted d-block small">ETH</span>
-                        <span class="currency-value fw-bold fs-5">$${data.ETH.price}</span>
-                        <span class="small d-block ${data.ETH.change >= 0 ? 'text-success' : 'text-danger'}">${data.ETH.change}%</span>
-                    </div>
-                    <div class="text-center m-1">
-                        <span class="text-muted d-block small">TON</span>
-                        <span class="currency-value fw-bold fs-5">$${data.TON.price}</span>
-                        <span class="small d-block ${data.TON.change >= 0 ? 'text-success' : 'text-danger'}">${data.TON.change}%</span>
-                    </div>
-                </div>
+                `;
+            });
+            html += `</div>
                 <div class="mt-3 px-2" style="height: 120px; width: 100%;">
                     <canvas id="cryptoChart"></canvas>
                 </div>
             `;
         }
-        else if (type === 'it_news' || type === 'politics' || type === 'ai_models') {
+        else if (tip === 'it_news' || tip === 'politics' || tip === 'ai_models') {
             html = '<div class="news-list px-1">';
-            data.forEach(item => {
-                if (item.error) {
-                    html += `<div class="text-danger small">${item.error}</div>`;
+            d.forEach(i => {
+                if (i.error) {
+                    html += `<div class="text-danger small">${i.error}</div>`;
                 } else {
                     html += `
                         <div class="news-item">
-                            <a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+                            <a href="${i.link}" target="_blank" rel="noopener noreferrer">${i.title}</a>
                         </div>
                     `;
                 }
             });
             html += '</div>';
         }
-        else if (type === 'weather') {
+        else if (tip === 'weather') {
             html = `
                 <div class="text-center px-1">
-                    <h6 class="fw-bold mb-1">${data.city}</h6>
-                    <div class="fs-2 my-1">${data.description.split(' ')[0]}</div>
-                    <div class="text-muted small mb-1">${data.description.substring(data.description.indexOf(' ') + 1)}</div>
+                    <h6 class="fw-bold mb-1">${d.city}</h6>
+                    <div class="fs-2 my-1">${d.description.split(' ')[0]}</div>
+                    <div class="text-muted small mb-1">${d.description.substring(d.description.indexOf(' ') + 1)}</div>
                     <div class="d-flex justify-content-around">
                         <div class="small">
                             <span class="text-muted d-block">Мин</span>
-                            <span>${data.temp_min}°C</span>
+                            <span>${d.temp_min}°C</span>
                         </div>
                         <div class="small">
                             <span class="text-muted d-block">Осадки</span>
-                            <span>${data.precipitation_probability}%</span>
+                            <span>${d.precipitation_probability}%</span>
                         </div>
                         <div class="small">
                             <span class="text-muted d-block">Макс</span>
-                            <span class="text-danger">${data.temp_max}°C</span>
+                            <span class="text-danger">${d.temp_max}°C</span>
                         </div>
                     </div>
                     <div class="mt-3" style="height: 100px; width: 100%;">
@@ -236,51 +220,49 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }
 
-        // Заменяем loading indicator на контент
-        const el = container.querySelector('.loading-indicator');
-        if (el) {
-            el.outerHTML = html;
+        const indicator = kon.querySelector('.loading-indicator');
+        if (indicator) {
+            indicator.outerHTML = html;
         } else {
-            container.innerHTML += html;
+            kon.innerHTML = html;
         }
 
-        // Инициализация графиков после вставки в DOM
         setTimeout(() => {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-            const textColor = isDark ? '#a0a0a0' : '#6c757d';
+            const is_dark = document.body.getAttribute('data-theme') === 'dark';
+            const setka_cvet = is_dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            const tekst_cvet = is_dark ? '#a0a0a0' : '#6c757d';
 
-            if (type === 'currency' && document.getElementById('currencyChart')) {
-                const currKeys = Object.keys(data).filter(k => k !== 'date');
-                if (window.widgetCharts['currency']) window.widgetCharts['currency'].destroy();
+            if (tip === 'currency' && document.getElementById('currencyChart')) {
+                const kl_spis = Object.keys(d).filter(k => k !== 'date');
+                if (window.wid_graf_spis['currency']) window.wid_graf_spis['currency'].destroy();
                 const ctx = document.getElementById('currencyChart').getContext('2d');
-                window.widgetCharts['currency'] = new Chart(ctx, {
+                window.wid_graf_spis['currency'] = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: currKeys,
+                        labels: kl_spis,
                         datasets: [
-                            { label: 'Сегодня', data: currKeys.map(k => data[k].current), backgroundColor: '#4A90E2', borderRadius: 4 },
-                            { label: 'Вчера', data: currKeys.map(k => data[k].previous), backgroundColor: isDark ? '#444' : '#e0e0e0', borderRadius: 4 }
+                            { label: 'Сегодня', data: kl_spis.map(k => d[k].current), backgroundColor: '#4A90E2', borderRadius: 4 },
+                            { label: 'Вчера', data: kl_spis.map(k => d[k].previous), backgroundColor: is_dark ? '#444' : '#e0e0e0', borderRadius: 4 }
                         ]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: { x: { grid: { display: false }, ticks: { color: textColor } }, y: { display: false } }
+                        scales: { x: { grid: { display: false }, ticks: { color: tekst_cvet } }, y: { display: false } }
                     }
                 });
             }
-            if (type === 'crypto' && document.getElementById('cryptoChart')) {
-                const cryptoKeys = Object.keys(data);
-                if (window.widgetCharts['crypto']) window.widgetCharts['crypto'].destroy();
+            if (tip === 'crypto' && document.getElementById('cryptoChart')) {
+                const kl_spis = Object.keys(d);
+                if (window.wid_graf_spis['crypto']) window.wid_graf_spis['crypto'].destroy();
                 const ctx = document.getElementById('cryptoChart').getContext('2d');
-                window.widgetCharts['crypto'] = new Chart(ctx, {
+                window.wid_graf_spis['crypto'] = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: cryptoKeys,
+                        labels: kl_spis,
                         datasets: [{
                             label: 'Изменение 24ч (%)',
-                            data: cryptoKeys.map(k => data[k].change),
+                            data: kl_spis.map(k => d[k].change),
                             backgroundColor: (ctx) => ctx.raw >= 0 ? '#198754' : '#dc3545',
                             borderRadius: 4
                         }]
@@ -288,20 +270,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: { x: { grid: { display: false }, ticks: { color: textColor } }, y: { grid: { color: gridColor }, ticks: { color: textColor } } }
+                        scales: { x: { grid: { display: false }, ticks: { color: tekst_cvet } }, y: { grid: { color: setka_cvet }, ticks: { color: tekst_cvet } } }
                     }
                 });
             }
-            if (type === 'weather' && document.getElementById('weatherChart') && data.hourly_times) {
-                if (window.widgetCharts['weather']) window.widgetCharts['weather'].destroy();
+            if (tip === 'weather' && document.getElementById('weatherChart') && d.hourly_times) {
+                if (window.wid_graf_spis['weather']) window.wid_graf_spis['weather'].destroy();
                 const ctx = document.getElementById('weatherChart').getContext('2d');
-                window.widgetCharts['weather'] = new Chart(ctx, {
+                window.wid_graf_spis['weather'] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: data.hourly_times,
+                        labels: d.hourly_times,
                         datasets: [{
                             label: 'Температура (°C)',
-                            data: data.hourly_temps,
+                            data: d.hourly_temps,
                             borderColor: '#e74c3c',
                             backgroundColor: 'rgba(231, 76, 60, 0.1)',
                             borderWidth: 2,
@@ -313,143 +295,148 @@ document.addEventListener("DOMContentLoaded", () => {
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: { x: { grid: { display: false }, ticks: { color: textColor, maxTicksLimit: 6 } }, y: { grid: { color: gridColor }, ticks: { color: textColor } } }
+                        scales: { x: { grid: { display: false }, ticks: { color: tekst_cvet, maxTicksLimit: 6 } }, y: { grid: { color: setka_cvet }, ticks: { color: tekst_cvet } } }
                     }
                 });
             }
         }, 100);
     }
 
-    function initAnalogClock() {
-        const hourHand = document.getElementById('hourHand');
-        const minuteHand = document.getElementById('minuteHand');
-        const secondHand = document.getElementById('secondHand');
-        const digitalClock = document.getElementById('digitalClock');
+    function init_chas(kon) {
+        const strel_chas = document.getElementById('hourHand');
+        const strel_min = document.getElementById('minuteHand');
+        const strel_sec = document.getElementById('secondHand');
+        const cifr_chas = document.getElementById('digitalClock');
 
-        if (!hourHand || !minuteHand || !secondHand) return;
+        if (!strel_chas || !strel_min || !strel_sec) return;
 
-        function setClock() {
-            const now = new Date();
-            const seconds = now.getSeconds();
-            const minutes = now.getMinutes();
-            const hours = now.getHours();
+        const stil = kon ? kon.getAttribute('data-clock-style') : 'both';
+        const an_chas = document.querySelector('.analog-clock');
+        if (an_chas && stil === 'digital') an_chas.style.display = 'none';
+        if (cifr_chas && stil === 'analog') cifr_chas.style.display = 'none';
 
-            const secondsDegrees = ((seconds / 60) * 360);
-            const minutesDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6);
-            const hoursDegrees = ((hours / 12) * 360) + ((minutes / 60) * 30);
+        function tik_tak() {
+            const t = new Date();
+            const s = t.getSeconds();
+            const m = t.getMinutes();
+            const h = t.getHours();
 
-            secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
-            minuteHand.style.transform = `rotate(${minutesDegrees}deg)`;
-            hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+            const s_deg = ((s / 60) * 360);
+            const m_deg = ((m / 60) * 360) + ((s / 60) * 6);
+            const h_deg = ((h / 12) * 360) + ((m / 60) * 30);
 
-            if (digitalClock) {
-                const h = String(hours).padStart(2, '0');
-                const m = String(minutes).padStart(2, '0');
-                const s = String(seconds).padStart(2, '0');
-                digitalClock.textContent = `${h}:${m}:${s}`;
+            strel_sec.style.transform = `rotate(${s_deg}deg)`;
+            strel_min.style.transform = `rotate(${m_deg}deg)`;
+            strel_chas.style.transform = `rotate(${h_deg}deg)`;
+
+            if (cifr_chas) {
+                const hh = String(h).padStart(2, '0');
+                const mm = String(m).padStart(2, '0');
+                const ss = String(s).padStart(2, '0');
+                cifr_chas.textContent = `${hh}:${mm}:${ss}`;
             }
         }
 
-        setInterval(setClock, 1000);
-        setClock();
+        setInterval(tik_tak, 1000);
+        tik_tak();
     }
 
-    function initCalendar() {
-        const gridEl = document.getElementById('calGrid');
-        const monthYearEl = document.getElementById('calMonthYear');
-        const prevBtn = document.getElementById('prevMonthBtn');
-        const nextBtn = document.getElementById('nextMonthBtn');
+    function init_cal() {
+        const setka_el = document.getElementById('calGrid');
+        const m_y_el = document.getElementById('calMonthYear');
+        const kn_prev = document.getElementById('prevMonthBtn');
+        const kn_next = document.getElementById('nextMonthBtn');
 
-        if (!gridEl || !monthYearEl) return;
+        if (!setka_el || !m_y_el) return;
 
-        const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-        const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        const m_spis = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        const d_spis = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-        let currentDate = new Date();
-        let displayMonth = currentDate.getMonth();
-        let displayYear = currentDate.getFullYear();
+        let t = new Date();
+        let tek_m = t.getMonth();
+        let tek_y = t.getFullYear();
 
-        function renderCalendar(year, month) {
-            gridEl.innerHTML = '';
-            monthYearEl.textContent = `${months[month]} ${year}`;
+        function risuy_cal(y, m) {
+            setka_el.innerHTML = '';
+            m_y_el.textContent = `${m_spis[m]} ${y}`;
 
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const perv_d = new Date(y, m, 1).getDay();
+            const d_v_m = new Date(y, m + 1, 0).getDate();
 
-            let startOffset = firstDay - 1;
-            if (startOffset === -1) startOffset = 6;
+            let otst = perv_d - 1;
+            if (otst === -1) otst = 6;
 
-            days.forEach(day => {
-                const dEl = document.createElement('div');
-                dEl.className = 'cal-cell cal-header text-muted small fw-bold text-center';
-                dEl.textContent = day;
-                gridEl.appendChild(dEl);
+            d_spis.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'cal-cell cal-header text-muted small fw-bold text-center';
+                el.textContent = d;
+                setka_el.appendChild(el);
             });
 
-            for (let i = 0; i < startOffset; i++) {
-                const empty = document.createElement('div');
-                empty.className = 'cal-cell empty';
-                gridEl.appendChild(empty);
+            for (let i = 0; i < otst; i++) {
+                const el = document.createElement('div');
+                el.className = 'cal-cell empty';
+                setka_el.appendChild(el);
             }
 
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dEl = document.createElement('div');
-                dEl.className = 'cal-cell cal-day text-center';
-                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
-                    dEl.classList.add('bg-primary', 'text-white', 'rounded-circle', 'fw-bold');
+            const seg = new Date();
+            for (let i = 1; i <= d_v_m; i++) {
+                const el = document.createElement('div');
+                el.className = 'cal-cell cal-day text-center';
+                if (y === seg.getFullYear() && m === seg.getMonth() && i === seg.getDate()) {
+                    el.classList.add('bg-primary', 'text-white', 'rounded-circle', 'fw-bold');
                 }
-                dEl.textContent = i;
-                gridEl.appendChild(dEl);
+                el.textContent = i;
+                setka_el.appendChild(el);
             }
         }
 
-        renderCalendar(displayYear, displayMonth);
+        risuy_cal(tek_y, tek_m);
 
-        if (prevBtn) prevBtn.onclick = (e) => {
+        if (kn_prev) kn_prev.onclick = (e) => {
             e.stopPropagation();
-            displayMonth--;
-            if (displayMonth < 0) { displayMonth = 11; displayYear--; }
-            renderCalendar(displayYear, displayMonth);
+            tek_m--;
+            if (tek_m < 0) { tek_m = 11; tek_y--; }
+            risuy_cal(tek_y, tek_m);
         };
 
-        if (nextBtn) nextBtn.onclick = (e) => {
+        if (kn_next) kn_next.onclick = (e) => {
             e.stopPropagation();
-            displayMonth++;
-            if (displayMonth > 11) { displayMonth = 0; displayYear++; }
-            renderCalendar(displayYear, displayMonth);
+            tek_m++;
+            if (tek_m > 11) { tek_m = 0; tek_y++; }
+            risuy_cal(tek_y, tek_m);
         };
     }
 
-    function initBookmarks(container) {
-        const form = container.querySelector('#add-bookmark-form');
+    function init_bm(kon) {
+        const form = kon.querySelector('#add-bookmark-form');
         if (!form) return;
         form.onsubmit = (e) => {
             e.preventDefault();
-            const titleInput = form.querySelector('#bm-title');
-            const urlInput = form.querySelector('#bm-url');
+            const t_inp = form.querySelector('#bm-title');
+            const u_inp = form.querySelector('#bm-url');
             fetch('/api/v1/bookmarks', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                body: JSON.stringify({ title: titleInput.value, url: urlInput.value, icon: 'fa-star' })
-            }).then(res => res.json()).then(data => {
-                if (data.success) window.location.reload();
-                else alert('Ошибка: ' + data.error);
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': tok_csrf },
+                body: JSON.stringify({ title: t_inp.value, url: u_inp.value, icon: 'fa-star' })
+            }).then(r => r.json()).then(d => {
+                if (d.success) window.location.reload();
+                else alert('Ошибка: ' + d.error);
             });
         };
     }
 
-    const toggles = document.querySelectorAll('.widget-toggle');
-    toggles.forEach(toggle => {
-        toggle.onchange = (e) => {
-            const widgetType = e.target.getAttribute('data-widget-type');
-            const isActive = e.target.checked;
-            fetch(`/api/v1/widgets/${widgetType}/toggle`, {
+    const kn_toggle_spis = document.querySelectorAll('.widget-toggle');
+    kn_toggle_spis.forEach(kn => {
+        kn.onchange = (e) => {
+            const tip = e.target.getAttribute('data-widget-type');
+            const akt = e.target.checked;
+            fetch(`/api/v1/widgets/${tip}/toggle`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                body: JSON.stringify({ is_active: isActive })
-            }).then(res => res.json()).then(data => {
-                if (data.error) { alert(`Ошибка: ${data.error}`); e.target.checked = !isActive; }
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': tok_csrf },
+                body: JSON.stringify({ is_active: akt })
+            }).then(r => r.json()).then(d => {
+                if (d.error) { alert(`Ошибка: ${d.error}`); e.target.checked = !akt; }
             });
         };
     });

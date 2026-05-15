@@ -86,18 +86,18 @@ def _poluch_pog(lat: float, lon: float) -> Dict[str, Any]:
     }
 
 
-def pog_prognoz(u: User) -> Dict[str, Any]:
+def pog_prog(u: User) -> Dict[str, Any]:
     """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
     try:
         lat = u.pog_lat
         lon = u.pog_lon
-        g_name = u.pog_gorod
+        g_name = u.pog_city
 
         if lat is None or lon is None:
-            lat, lon, g_name = _poluch_gorod_geo(u.pog_gorod)
+            lat, lon, g_name = _poluch_gorod_geo(u.pog_city)
             u.pog_lat = lat
             u.pog_lon = lon
-            u.pog_gorod = g_name
+            u.pog_city = g_name
             # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
             # но обновляем объект.
 

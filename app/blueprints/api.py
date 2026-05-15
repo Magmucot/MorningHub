@@ -1,18 +1,17 @@
-import io
 from flask import Blueprint, Response, jsonify, request
 from flask_login import login_required, current_user
 
 from app.extensions import db
 from app.models.widget import WidgetConfig
 from app.models.bookmark import Bookmark
-from app.services.aggregator import sobr_utro_svodka_tekst
-from app.services.currency import poluch_valuta_kurs
-from app.services.it_news import it_novosti
-from app.services.politics import polit_novosti
-from app.services.ai_models import poluch_ai_mod_novosti
-from app.services.ai_summary import poluch_ai_svodka
-from app.services.weather import pog_prognoz
-from app.services.crypto import poluch_kripta_kurs
+from app.services.aggregator import sobr_svod_t
+from app.services.currency import poluch_val_kurs
+from app.services.it_news import it_nov
+from app.services.politics import polit_nov
+from app.services.ai_models import poluch_ai_mod_nov
+from app.services.ai_summary import poluch_ai_svod
+from app.services.weather import pog_prog
+from app.services.crypto import poluch_crypto_kurs
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
@@ -20,13 +19,13 @@ bp = Blueprint("api", __name__, url_prefix="/api/v1")
 @bp.route("/widgets/crypto", methods=["GET"])
 @login_required
 def api_crypto():
-    return jsonify(poluch_kripta_kurs(current_user.kripta_spis))
+    return jsonify(poluch_crypto_kurs(current_user.crypto_spis))
 
 
 @bp.route("/widgets/weather", methods=["GET"])
 @login_required
 def api_weather():
-    rez = pog_prognoz(current_user)
+    rez = pog_prog(current_user)
     # Если город был разрешен, сохраняем координаты
     db.session.commit()
     return jsonify(rez)
@@ -71,9 +70,9 @@ def save_grid_widgets():
     wid_karta = {w.w_tip: w for w in wid_spis}
 
     for i in d["items"]:
-        w_tip = i.get("widget_type")
-        if w_tip in wid_karta:
-            w = wid_karta[w_tip]
+        tip = i.get("widget_type")
+        if tip in wid_karta:
+            w = wid_karta[tip]
             w.x = i.get("x", 0)
             w.y = i.get("y", 0)
             w.w = i.get("w", 4)
@@ -86,7 +85,7 @@ def save_grid_widgets():
 @bp.route("/widgets/ai-summary", methods=["GET"])
 @login_required
 def api_ai_summary():
-    return jsonify(poluch_ai_svodka(current_user))
+    return jsonify(poluch_ai_svod(current_user))
 
 
 @bp.route("/user/lock-grid", methods=["PATCH"])
@@ -104,25 +103,25 @@ def lock_grid():
 @bp.route("/widgets/ai-models", methods=["GET"])
 @login_required
 def api_ai_models():
-    return jsonify(poluch_ai_mod_novosti())
+    return jsonify(poluch_ai_mod_nov())
 
 
 @bp.route("/widgets/it-news", methods=["GET"])
 @login_required
 def api_it_news():
-    return jsonify(it_novosti())
+    return jsonify(it_nov())
 
 
 @bp.route("/widgets/currency", methods=["GET"])
 @login_required
 def api_currency():
-    return jsonify(poluch_valuta_kurs(current_user.valuta_spis))
+    return jsonify(poluch_val_kurs(current_user.val_spis))
 
 
 @bp.route("/widgets/politics", methods=["GET"])
 @login_required
 def api_politics():
-    return jsonify(polit_novosti())
+    return jsonify(polit_nov())
 
 
 @bp.route("/widgets/<w_tip>/toggle", methods=["PATCH"])
@@ -151,7 +150,7 @@ def export_summary():
         WidgetConfig.query.filter_by(u_id=current_user.id, is_akt=True).order_by(WidgetConfig.poz).all()
     )
 
-    tekst = sobr_utro_svodka_tekst(akt_wid_spis)
+    tekst = sobr_svod_t(akt_wid_spis)
 
     if fmt == "txt":
         return Response(

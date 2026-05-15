@@ -5,8 +5,8 @@ from typing import Dict, Any
 
 # Кэш на 1 час (3600 секунд)
 @cached(cache=TTLCache(maxsize=100, ttl=3600))
-def poluch_valuta_kurs(valuta_spis_str: str) -> Dict[str, Any]:
-    v_spis = [c.strip().upper() for c in valuta_spis_str.split(',') if c.strip()]
+def poluch_val_kurs(val_spis_str: str) -> Dict[str, Any]:
+    v_spis = [c.strip().upper() for c in val_spis_str.split(',') if c.strip()]
     if not v_spis:
         return {}
 
@@ -18,8 +18,8 @@ def poluch_valuta_kurs(valuta_spis_str: str) -> Dict[str, Any]:
 
         v_d = d.get("Valute", {})
 
-        def poluch_v(code):
-            v = v_d.get(code, {})
+        def poluch_v(kod):
+            v = v_d.get(kod, {})
             if not v:
                 return None
             # Если номинал больше 1, делим, чтобы получить цену за 1 единицу
@@ -33,7 +33,7 @@ def poluch_valuta_kurs(valuta_spis_str: str) -> Dict[str, Any]:
             v_info = poluch_v(c)
             if v_info:
                 rez[c] = v_info
-
+                
         rez["date"] = d.get("Date", "")
         return rez
     except requests.RequestException as e:

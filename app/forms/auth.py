@@ -17,6 +17,6 @@ class RegisterForm(FlaskForm):
     submit = SubmitField("Зарегистрироваться")
 
     def validate_username(self, field: StringField) -> None:
-        user = User.query.filter_by(username=field.data).first()
-        if user:
+        u = User.query.filter_by(u_name=field.data).first()
+        if u:
             raise ValidationError("Это имя пользователя уже занято.")

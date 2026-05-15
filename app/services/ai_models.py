@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 
 
 @cached(cache=TTLCache(maxsize=1, ttl=1800))
-def poluch_ai_mod_novosti(lim: int = 5) -> List[Dict[str, Any]]:
+def poluch_ai_mod_nov(lim: int = 5) -> List[Dict[str, Any]]:
     u = "https://artificialanalysis.ai/changelog"
     try:
         r = requests.get(u, timeout=10)
@@ -26,14 +26,14 @@ def poluch_ai_mod_novosti(lim: int = 5) -> List[Dict[str, Any]]:
             if not l_tag:
                 l_tag = art.find_parent("a")
 
-            ssylka = "https://artificialanalysis.ai"
+            ssyl = "https://artificialanalysis.ai"
             if l_tag and l_tag.get("href"):
                 href = l_tag.get("href")
-                ssylka = href if href.startswith("http") else f"https://artificialanalysis.ai{href}"
+                ssyl = href if href.startswith("http") else f"https://artificialanalysis.ai{href}"
             else:
-                ssylka = "https://artificialanalysis.ai/changelog"
+                ssyl = "https://artificialanalysis.ai/changelog"
 
-            n_spis.append({"title": zagol, "link": ssylka})
+            n_spis.append({"title": zagol, "link": ssyl})
 
         return n_spis
     except Exception as e:

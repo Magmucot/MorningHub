@@ -11,8 +11,6 @@ from app.extensions import db
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
-class User(UserMixin, db.Model):
-    __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     u_name: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
@@ -21,12 +19,12 @@ class User(UserMixin, db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=False)
 
     # Weather settings
-    pog_gorod: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
+    pog_city: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
     pog_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
     pog_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
     # AI settings
-    ai_kluch: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    ai_key: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ai_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ai_mod: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
 
@@ -37,8 +35,8 @@ class User(UserMixin, db.Model):
     wid_prozr: Mapped[float] = mapped_column(nullable=False, default=0.95)
 
     # Widget tracking settings
-    kripta_spis: Mapped[str] = mapped_column(String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False)
-    valuta_spis: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
+    crypto_spis: Mapped[str] = mapped_column(String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False)
+    val_spis: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
     chas_stil: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
 
     widgets: Mapped[List["WidgetConfig"]] = relationship(
@@ -60,4 +58,4 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.pass_hash, password)
 
     def __repr__(self) -> str:
-        return f"<User {self.username}>"
+        return f"<User {self.u_name}>"

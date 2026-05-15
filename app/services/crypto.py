@@ -19,12 +19,12 @@ KNOWN_CRYPTOS = {
 
 # Кэш на 10 минут (600 секунд)
 @cached(cache=TTLCache(maxsize=100, ttl=600))
-def poluch_kripta_kurs(kripta_spis_str: str) -> Dict[str, Any]:
-    k_spis = [c.strip().lower() for c in kripta_spis_str.split(',') if c.strip()]
-    if not k_spis:
+def poluch_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:
+    c_spis = [c.strip().lower() for c in crypto_spis_str.split(',') if c.strip()]
+    if not c_spis:
         return {}
     
-    id_spis = ",".join(k_spis)
+    id_spis = ",".join(c_spis)
     
     u = "https://api.coingecko.com/api/v3/simple/price"
     p = {"ids": id_spis, "vs_currencies": "usd", "include_24hr_change": "true"}
@@ -34,7 +34,7 @@ def poluch_kripta_kurs(kripta_spis_str: str) -> Dict[str, Any]:
         d = r.json()
 
         rez = {}
-        for cid in k_spis:
+        for cid in c_spis:
             info = d.get(cid)
             if info:
                 sym = KNOWN_CRYPTOS.get(cid, cid.upper()[:4])
