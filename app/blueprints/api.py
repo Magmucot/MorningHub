@@ -1,3 +1,4 @@
+import asyncio
 from flask import Blueprint, Response, jsonify, request
 from flask_login import login_required, current_user
 import logging
@@ -99,8 +100,9 @@ def save_grid_widgets():
 
 @bp.route("/widgets/ai-summary", methods=["GET"])
 @login_required
-async def api_ai_summary():
-    return jsonify(await get_ai_summary(current_user))
+def api_ai_summary():
+    result = asyncio.run(get_ai_summary(current_user))
+    return jsonify(result)
 
 
 @bp.route("/user/lock-grid", methods=["PATCH"])
