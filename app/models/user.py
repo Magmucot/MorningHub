@@ -18,25 +18,27 @@ class User(UserMixin, db.Model):
     fon_img: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=False)
 
-    # Weather settings
-    pog_city: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
+    # Погода
+    pog_gorod: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
     pog_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
     pog_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
-    # AI settings
-    ai_key: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # AI
+    ai_kluch: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ai_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     ai_mod: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
 
-    # UI settings
+    # UI
     setka_lock: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     tema: Mapped[str] = mapped_column(String(20), default="light", nullable=False)
     wid_cvet: Mapped[str] = mapped_column(String(20), default="#ffffff", nullable=False)
     wid_prozr: Mapped[float] = mapped_column(nullable=False, default=0.95)
 
-    # Widget tracking settings
-    crypto_spis: Mapped[str] = mapped_column(String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False)
-    val_spis: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
+    # Виджеты
+    kripta_spis: Mapped[str] = mapped_column(
+        String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False
+    )
+    valuta_spis: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
     chas_stil: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
 
     widgets: Mapped[List["WidgetConfig"]] = relationship(

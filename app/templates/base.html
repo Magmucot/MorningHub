@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +9,47 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- GridStack CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/gridstack@11.1.1/dist/gridstack.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@11.1.1/dist/gridstack.min.css" rel="stylesheet" />
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
-<body {% if current_user.is_authenticated %}data-theme="{{ current_user.tema }}"{% endif %}>
+
+<body {% if current_user.is_authenticated %}data-theme="{{ current_user.tema }}" {% endif %}>
     {% if current_user.is_authenticated %}
     <style>
         :root {
-            --widget-bg-color: {{ current_user.wid_cvet }};
-            --widget-opacity: {{ current_user.wid_prozr }};
+            --widget-bg-color: {
+                    {
+                    current_user.wid_cvet
+                }
+            }
+
+            ;
+
+            --widget-opacity: {
+                    {
+                    current_user.wid_prozr
+                }
+            }
+
+            ;
         }
-        {% if current_user.fon_img %}
+
+            {
+            % if current_user.fon_img %
+        }
+
         body {
             background-image: url("{{ url_for('static', filename='uploads/' + current_user.fon_img) }}");
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
         }
-        {% endif %}
+
+            {
+            % endif %
+        }
     </style>
     {% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -39,22 +61,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard.index') }}">Дашборд</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard.settings') }}">Настройки</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Выйти ({{ current_user.u_name }})</a>
-                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard.index') }}">Дашборд</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard.settings') }}">Настройки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Выйти ({{
+                            current_user.u_name }})</a>
+                    </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}">Вход</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a>
-                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Вход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
@@ -63,14 +86,15 @@
 
     <div class="container-fluid px-2 px-md-4 mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'primary' }} alert-dismissible fade show shadow-sm" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'primary' }} alert-dismissible fade show shadow-sm"
+            role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
         {% block content %}{% endblock %}
@@ -84,4 +108,5 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
+
 </html>

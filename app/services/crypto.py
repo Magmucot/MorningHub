@@ -20,7 +20,7 @@ KNOWN_CRYPTOS = {
 
 
 @cached(cache=TTLCache(maxsize=100, ttl=600))
-def poluch_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:
+def get_crypto_kurs(crypto_spis_str: str) -> Dict[str, Any]:
     c_spis = [c.strip().lower() for c in crypto_spis_str.split(",") if c.strip()]
     if not c_spis:
         return {}

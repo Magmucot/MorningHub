@@ -23,13 +23,13 @@ def sohr_fon_img(f: FileStorage) -> Optional[str]:
         raise ValueError("Недопустимый тип файла или расширение.")
 
     rassh = f.filename.rsplit(".", 1)[1].lower()
-    nov_imya = f"{uuid.uuid4().hex}.{rassh}"
+    news_imya = f"{uuid.uuid4().hex}.{rassh}"
 
     f_papka = current_app.config.get("UPLOAD_FOLDER")
     if not f_papka:
         raise RuntimeError("UPLOAD_FOLDER не настроен.")
 
-    f_put = os.path.join(f_papka, nov_imya)
+    f_put = os.path.join(f_papka, news_imya)
 
     f.save(f_put)
-    return nov_imya
+    return news_imya

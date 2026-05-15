@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 
 
 @cached(cache=TTLCache(maxsize=1, ttl=1800))
-def poluch_ai_mod_nov(lim: int = 5) -> List[Dict[str, Any]]:
+def get_ai_models_news(lim: int = 5) -> List[Dict[str, Any]]:
     u = "https://artificialanalysis.ai/changelog"
     try:
         r = requests.get(u, timeout=10)

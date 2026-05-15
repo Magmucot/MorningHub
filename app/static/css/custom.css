@@ -38,7 +38,7 @@ body[data-theme="dark"]::before {
     background: rgba(0, 0, 0, 0.6);
 }
 
-/* Glassmorphism для карточек */
+/* Карточки */
 .card {
     background-color: color-mix(in srgb, var(--widget-bg-color) calc(var(--widget-opacity) * 100%), transparent);
     backdrop-filter: blur(20px);
@@ -68,7 +68,7 @@ body[data-theme="dark"]::before {
     border-radius: 16px;
 }
 
-/* Стили для CSS Grid */
+/* CSS Grid */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -76,7 +76,7 @@ body[data-theme="dark"]::before {
     align-items: start;
 }
 
-/* Drag and drop cursor */
+/* Drag and drop */
 .drag-handle:active {
     cursor: grabbing !important;
 }
@@ -227,16 +227,18 @@ body[data-theme="dark"] .text-muted {
     color: var(--text-muted) !important;
 }
 
-/* Mobile Adaptation */
+/* Мобила */
 @media (max-width: 768px) {
     .currency-value {
         font-size: 1.25rem;
     }
+
     .analog-clock {
         width: 100px;
         height: 100px;
         border-width: 4px;
     }
+
     .cal-cell {
         font-size: 0.8rem;
     }

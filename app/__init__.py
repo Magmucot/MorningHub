@@ -13,12 +13,11 @@ def create_app(config_name: str = "dev") -> Flask:
     if hasattr(config_obj, "init_app"):
         config_obj.init_app(app)
 
-    # Убедитесь, что каталог загрузки существует
     upload_folder = app.config.get("UPLOAD_FOLDER")
     if upload_folder and not os.path.exists(upload_folder):
         os.makedirs(upload_folder, exist_ok=True)
 
-    # Инициализировать расширения
+    # Расширения
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)

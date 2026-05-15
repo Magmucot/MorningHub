@@ -29,25 +29,25 @@ WEATHER_CODES = {
 }
 
 
-def _poluch_gorod_geo(gorod: str) -> Tuple[float, float, str]:
+def _get_city_geo(city: str) -> Tuple[float, float, str]:
     geo_u = "https://geocoding-api.open-meteo.com/v1/search"
     r = requests.get(
         geo_u,
-        params={"name": gorod, "count": 1, "language": "ru", "format": "json"},
+        params={"name": city, "count": 1, "language": "ru", "format": "json"},
         timeout=5,
     )
     r.raise_for_status()
     d = r.json()
     rez_spis = d.get("results") or []
     if not rez_spis:
-        raise ValueError(f"Город не найден: {gorod}")
+        raise ValueError(f"Город не найден: {city}")
     perv = rez_spis[0]
     return perv["latitude"], perv["longitude"], perv["name"]
 
 
 # Кеш на 1 час (3600 сек) для прогноза по координатам
 @cached(cache=TTLCache(maxsize=128, ttl=3600))
-def _poluch_pog(lat: float, lon: float) -> Dict[str, Any]:
+def _get_pog(lat: float, lon: float) -> Dict[str, Any]:
     pog_u = "https://api.open-meteo.com/v1/forecast"
     r = requests.get(
         pog_u,
@@ -94,14 +94,14 @@ def pog_prog(u: User) -> Dict[str, Any]:
         g_name = u.pog_city
 
         if lat is None or lon is None:
-            lat, lon, g_name = _poluch_gorod_geo(u.pog_city)
+            lat, lon, g_name = _get_city_geo(u.pog_city)
             u.pog_lat = lat
             u.pog_lon = lon
             u.pog_city = g_name
             # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
             # но обновляем объект.
 
-        d = _poluch_pog(lat, lon)
+        d = _get_pog(lat, lon)
         d["city"] = g_name
         return d
     except Exception as e:

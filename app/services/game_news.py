@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 
 # Кэш на 30 минут (1800 секунд)
 @cached(cache=TTLCache(maxsize=1, ttl=1800))
-def igry_nov(lim: int = 5) -> List[Dict[str, Any]]:
+def game_news(lim: int = 5) -> List[Dict[str, Any]]:
     u = "https://www.playground.ru/news"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     try:

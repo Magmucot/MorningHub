@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row">
-    <!-- Настройки виджетов -->
+
     <div class="col-md-6 mb-4">
         <div class="card shadow-sm settings-card">
             <div class="card-header bg-white fw-bold">
@@ -27,9 +27,8 @@
                             {% if widget.w_tip == 'crypto' %}🪙 Криптовалюты{% endif %}
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input widget-toggle" type="checkbox" role="switch" 
-                                   data-widget-type="{{ widget.w_tip }}" 
-                                   {% if widget.is_akt %}checked{% endif %}>
+                            <input class="form-check-input widget-toggle" type="checkbox" role="switch"
+                                data-widget-type="{{ widget.w_tip }}" {% if widget.is_akt %}checked{% endif %}>
                         </div>
                     </li>
                     {% endfor %}
@@ -38,7 +37,6 @@
         </div>
     </div>
 
-    <!-- Загрузка фона и прочие настройки -->
     <div class="col-md-6 mb-4">
         <div class="card shadow-sm settings-card mb-4">
             <div class="card-header bg-white fw-bold">
@@ -47,7 +45,7 @@
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
-                    
+
                     <h6 class="border-bottom pb-2 mb-3">⛅ Погода</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Город</label>
@@ -56,13 +54,19 @@
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🪙 Криптовалюты и Валюты</h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Отслеживаемая криптовалюта (ID CoinGecko через запятую)</label>
-                        <input type="text" name="crypto_tracking" class="form-control" value="{{ current_user.crypto_spis }}" placeholder="bitcoin,ethereum,the-open-network,solana">
-                        <div class="form-text" style="font-size: 0.7rem;">Например: bitcoin, ethereum, solana, the-open-network (до 10 шт)</div>
+                        <label class="form-label text-muted small">Отслеживаемая криптовалюта (ID CoinGecko через
+                            запятую)</label>
+                        <input type="text" name="crypto_tracking" class="form-control"
+                            value="{{ current_user.crypto_spis }}"
+                            placeholder="bitcoin,ethereum,the-open-network,solana">
+                        <div class="form-text" style="font-size: 0.7rem;">Например: bitcoin, ethereum, solana,
+                            the-open-network (до 10 шт)</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Отслеживаемые фиатные валюты (Коды через запятую)</label>
-                        <input type="text" name="currency_tracking" class="form-control" value="{{ current_user.val_spis }}" placeholder="USD,EUR,CNY,GBP">
+                        <label class="form-label text-muted small">Отслеживаемые фиатные валюты (Коды через
+                            запятую)</label>
+                        <input type="text" name="currency_tracking" class="form-control"
+                            value="{{ current_user.val_spis }}" placeholder="USD,EUR,CNY,GBP">
                         <div class="form-text" style="font-size: 0.7rem;">Например: USD, EUR, CNY (до 10 шт)</div>
                     </div>
 
@@ -70,20 +74,27 @@
                     <div class="mb-3">
                         <label class="form-label text-muted small">Стиль часов</label>
                         <select name="clock_style" class="form-select">
-                            <option value="both" {% if current_user.chas_stil == 'both' %}selected{% endif %}>Аналоговые и Цифровые</option>
-                            <option value="analog" {% if current_user.chas_stil == 'analog' %}selected{% endif %}>Только Аналоговые</option>
-                            <option value="digital" {% if current_user.chas_stil == 'digital' %}selected{% endif %}>Только Цифровые</option>
+                            <option value="both" {% if current_user.chas_stil=='both' %}selected{% endif %}>Аналоговые и
+                                Цифровые</option>
+                            <option value="analog" {% if current_user.chas_stil=='analog' %}selected{% endif %}>Только
+                                Аналоговые</option>
+                            <option value="digital" {% if current_user.chas_stil=='digital' %}selected{% endif %}>Только
+                                Цифровые</option>
                         </select>
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">✨ Настройки ИИ (Сводка)</h6>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">OpenAI API Key (Оставьте пустым для ключа из .env)</label>
-                        <input type="password" name="ai_api_key" class="form-control" autocomplete="new-password" value="{{ current_user.ai_key or '' }}">
+                        <label class="form-label text-muted small">OpenAI API Key (Оставьте пустым для ключа из
+                            .env)</label>
+                        <input type="password" name="ai_api_key" class="form-control" autocomplete="new-password"
+                            value="{{ current_user.ai_key or '' }}">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Base URL (Ссылка на платформу, оставьте пустой для OpenAI)</label>
-                        <input type="text" name="ai_base_url" class="form-control" value="{{ current_user.ai_url or '' }}" placeholder="https://api.openai.com/v1">
+                        <label class="form-label text-muted small">Base URL (Ссылка на платформу, оставьте пустой для
+                            OpenAI)</label>
+                        <input type="text" name="ai_base_url" class="form-control"
+                            value="{{ current_user.ai_url or '' }}" placeholder="https://api.openai.com/v1">
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Имя модели (Оставьте пустым для дефолтной)</label>
@@ -94,18 +105,21 @@
                     <div class="mb-3">
                         <label class="form-label text-muted small">Тема оформления</label>
                         <select name="theme" class="form-select">
-                            <option value="light" {% if current_user.tema == 'light' %}selected{% endif %}>Светлая</option>
-                            <option value="dark" {% if current_user.tema == 'dark' %}selected{% endif %}>Темная</option>
+                            <option value="light" {% if current_user.tema=='light' %}selected{% endif %}>Светлая
+                            </option>
+                            <option value="dark" {% if current_user.tema=='dark' %}selected{% endif %}>Темная</option>
                         </select>
                     </div>
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label text-muted small">Цвет виджетов</label>
-                            <input type="color" name="widget_color" class="form-control form-control-color w-100" value="{{ current_user.wid_cvet }}">
+                            <input type="color" name="widget_color" class="form-control form-control-color w-100"
+                                value="{{ current_user.wid_cvet }}">
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label text-muted small">Прозрачность</label>
-                            <input type="range" name="widget_opacity" class="form-range" min="0.1" max="1" step="0.05" value="{{ current_user.wid_prozr }}">
+                            <input type="range" name="widget_opacity" class="form-range" min="0.1" max="1" step="0.05"
+                                value="{{ current_user.wid_prozr }}">
                         </div>
                     </div>
 
@@ -114,13 +128,14 @@
                         {{ form.fon_img.label(class="form-label text-muted small") }}
                         {{ form.fon_img(class="form-control") }}
                         {% for error in form.fon_img.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
+                        <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>
                     {% if current_user.fon_img %}
-                        <div class="mb-3 text-center">
-                            <img src="{{ url_for('static', filename='uploads/' + current_user.fon_img) }}" alt="Фон" class="img-thumbnail" style="max-height: 100px;">
-                        </div>
+                    <div class="mb-3 text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.fon_img) }}" alt="Фон"
+                            class="img-thumbnail" style="max-height: 100px;">
+                    </div>
                     {% endif %}
 
                     <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">Сохранить все настройки</button>
