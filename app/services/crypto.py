@@ -55,8 +55,8 @@ def get_crypto_kurs(crypto_lst_str: str) -> Dict[str, Any]:
             if info:
                 sym = KNOWN_CRYPTOS.get(cid, cid.upper()[:4])
                 res[sym] = {
-                    "price": round(info.get("usd", 0), 2),
-                    "change": round(info.get("usd_24h_change", 0), 2),
+                    "price": round(info.get("usd", 0), 4),
+                    "change": round(info.get("usd_24h_change", 0), 4),
                 }
         return res
     except requests.RequestException as e:

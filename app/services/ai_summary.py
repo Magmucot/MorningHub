@@ -35,10 +35,10 @@ async def get_ai_summary(user: User) -> Dict[str, Any]:
         return {"error": "API-ключ не настроен. Добавьте его в Настройки или в .env файл."}
 
     news_tasks = [
-        asyncio.to_thread(get_it_news, limit=5),
-        asyncio.to_thread(get_polit_news, limit=5),
-        asyncio.to_thread(get_ai_models_news, limit=5),
-        asyncio.to_thread(get_game_news, limit=5),
+        asyncio.to_thread(get_it_news, lim=5),
+        asyncio.to_thread(get_polit_news, lim=5),
+        asyncio.to_thread(get_ai_models_news, lim=5),
+        asyncio.to_thread(get_game_news, lim=5),
     ]
 
     news_results = await asyncio.gather(*news_tasks)

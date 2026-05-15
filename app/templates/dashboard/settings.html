@@ -49,7 +49,8 @@
                     <h6 class="border-bottom pb-2 mb-3">⛅ Погода</h6>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Город</label>
-                        <input type="text" name="weather_city" class="form-control" value="{{ current_user.weath_city }}">
+                        <input type="text" name="weather_city" class="form-control"
+                            value="{{ current_user.weath_city }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🪙 Криптовалюты и Валюты</h6>
@@ -74,11 +75,13 @@
                     <div class="mb-3">
                         <label class="form-label text-muted small">Стиль часов</label>
                         <select name="clock_style" class="form-select">
-                            <option value="both" {% if current_user.clock_stile=='both' %}selected{% endif %}>Аналоговые и
+                            <option value="both" {% if current_user.clock_stile=='both' %}selected{% endif %}>Аналоговые
+                                и
                                 Цифровые</option>
                             <option value="analog" {% if current_user.clock_stile=='analog' %}selected{% endif %}>Только
                                 Аналоговые</option>
-                            <option value="digital" {% if current_user.clock_stile=='digital' %}selected{% endif %}>Только
+                            <option value="digital" {% if current_user.clock_stile=='digital' %}selected{% endif %}>
+                                Только
                                 Цифровые</option>
                         </select>
                     </div>
@@ -98,7 +101,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small">Имя модели (Оставьте пустым для дефолтной)</label>
-                        <input type="text" name="ai_model" class="form-control" value="{{ current_user.ai_model or '' }}">
+                        <input type="text" name="ai_model" class="form-control"
+                            value="{{ current_user.ai_model or '' }}">
                     </div>
 
                     <h6 class="border-bottom pb-2 mt-4 mb-3">🎨 Кастомизация интерфейса</h6>
@@ -144,4 +148,4 @@
         </div>
     </div>
 </div>
-{% endblock %}k %}
+{% endblock %}
