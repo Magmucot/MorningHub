@@ -1,35 +1,37 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
 
 
 class Config:
-    """Base configuration."""
+    """Базовый конфиг"""
 
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-replace-in-prod")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-replace-in-prod")
+    SQLALCHEMY_TRACK_MODS = False
     UPLOAD_FOLDER = BASE_DIR / "app" / "static" / "uploads"
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB max file size
+    MAX_CONTENT_LEN = 10 * 1024 * 1024  # 10 MB
 
 
 class DevConfig(Config):
-    """Development configuration."""
+    """Разраб сборка"""
 
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'morninghub_dev.db'}")
+    SQLALCHEMY_DB_URI = os.environ.get("DB_URL", f"sqlite:///{BASE_DIR / 'db' / 'morninghub_dev.db'}")
 
 
 class ProdConfig(Config):
-    """Production configuration."""
+    """Продуктовая сборка"""
 
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DB_URI = os.environ.get("DB_URL")
 
     @classmethod
     def init_app(cls, app):
-        if not cls.SQLALCHEMY_DATABASE_URI:
-            raise ValueError("DATABASE_URL environment variable is required in production.")
+        if not cls.SQLALCHEMY_DB_URI:
+            raise ValueError("Переменная среды DB_URL требуется в рабочей среде.")
 
 
 config_by_name = dict(dev=DevConfig, prod=ProdConfig)
