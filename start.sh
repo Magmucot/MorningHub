@@ -38,7 +38,7 @@ with app.app_context():
 EOF
 
 # Запуск Gunicorn
-# -w 4: 4 worker processes
+# -w ${WEB_CONCURRENCY:-2}: worker processes (2 by default)
 # --bind 0.0.0.0:${PORT:-10000}: listen on all interfaces
 # --access-logfile -: log access to stdout
-exec gunicorn -w 4 --bind 0.0.0.0:${PORT:-10000} --access-logfile - "run:app"
+exec gunicorn -w ${WEB_CONCURRENCY:-2} --bind 0.0.0.0:${PORT:-10000} --access-logfile - "run:app"
