@@ -36,6 +36,21 @@ def _prover_wid_def(usr_id: int):
         "bookmarks",
         "crypto",
     ]
+    
+    default_layout = {
+        "it_news": {"x": 0, "y": 0, "h": 6},
+        "politics": {"x": 0, "y": 6, "h": 6},
+        "ai_models": {"x": 0, "y": 12, "h": 6},
+        "game_news": {"x": 0, "y": 18, "h": 6},
+        "analog_clock": {"x": 3, "y": 0, "h": 4},
+        "calendar": {"x": 3, "y": 4, "h": 8},
+        "bookmarks": {"x": 3, "y": 12, "h": 6},
+        "currency": {"x": 6, "y": 0, "h": 8},
+        "crypto": {"x": 6, "y": 8, "h": 8},
+        "ai_summary": {"x": 9, "y": 0, "h": 10},
+        "weather": {"x": 9, "y": 10, "h": 8},
+    }
+
     est_wid = WidgetConfig.query.filter_by(usr_id=usr_id).all()
     est_tipi = {w.w_tip for w in est_wid}
 
@@ -46,17 +61,17 @@ def _prover_wid_def(usr_id: int):
     for tip in wid_def:
         if tip not in est_tipi:
             pos = start_pos + offset
-            # Расставляем новые виджеты ниже существующих, формируя сетку (3 колонки шириной по 4, например)
+            layout = default_layout.get(tip, {"x": (pos % 4) * 3, "y": (pos // 4) * 6, "h": 6})
             nov_wid.append(
                 WidgetConfig(
                     usr_id=usr_id,
                     w_tip=tip,
                     is_act=True,
                     poz=pos,
-                    x=(pos % 4) * 3,
-                    y=(pos // 4) * 3,
+                    x=layout["x"],
+                    y=layout["y"],
                     w=3,
-                    h=3
+                    h=layout["h"]
                 )
             )
             offset += 1

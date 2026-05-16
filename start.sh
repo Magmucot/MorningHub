@@ -17,7 +17,6 @@ export AI_API_KEY=${AI_API_KEY:-""}
 echo "Запуск MorningHub в PROD моде..."
 
 
-# База данных
 echo "База данных: $DB_URL"
 python << EOF
 import os
@@ -42,3 +41,4 @@ EOF
 # --bind 0.0.0.0:${PORT:-10000}: listen on all interfaces
 # --access-logfile -: log access to stdout
 exec gunicorn -w ${WEB_CONCURRENCY:-2} --bind 0.0.0.0:${PORT:-10000} --access-logfile - "run:app"
+"run:app"

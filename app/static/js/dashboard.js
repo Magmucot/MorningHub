@@ -319,8 +319,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!strel_chas || !strel_min || !strel_sec) return;
 
-        const stil = kon ? kon.getAttribute('data-clock-style') : 'both';
-        const an_chas = document.querySelector('.analog-clock');
+        const clock_cont = kon ? kon.querySelector('.clock-container') : null;
+        const stil = clock_cont ? clock_cont.getAttribute('data-clock-style') : 'both';
+        const an_chas = kon ? kon.querySelector('.analog-clock') : document.querySelector('.analog-clock');
         if (an_chas && stil === 'digital') an_chas.style.display = 'none';
         if (cifr_chas && stil === 'analog') cifr_chas.style.display = 'none';
 

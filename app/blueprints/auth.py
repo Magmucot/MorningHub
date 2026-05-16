@@ -34,8 +34,33 @@ def register():
             "bookmarks",
             "crypto",
         ]
+        
+        default_layout = {
+            "it_news": {"x": 0, "y": 0, "h": 6},
+            "politics": {"x": 0, "y": 6, "h": 6},
+            "ai_models": {"x": 0, "y": 12, "h": 6},
+            "game_news": {"x": 0, "y": 18, "h": 6},
+            "analog_clock": {"x": 3, "y": 0, "h": 4},
+            "calendar": {"x": 3, "y": 4, "h": 8},
+            "bookmarks": {"x": 3, "y": 12, "h": 6},
+            "currency": {"x": 6, "y": 0, "h": 8},
+            "crypto": {"x": 6, "y": 8, "h": 8},
+            "ai_summary": {"x": 9, "y": 0, "h": 10},
+            "weather": {"x": 9, "y": 10, "h": 8},
+        }
+
         for idx, tip in enumerate(wid_def):
-            w = WidgetConfig(usr_id=usr.id, w_tip=tip, poz=idx, is_act=(tip != "ai_summary"))
+            layout = default_layout.get(tip, {"x": (idx % 4) * 3, "y": (idx // 4) * 6, "h": 6})
+            w = WidgetConfig(
+                usr_id=usr.id,
+                w_tip=tip,
+                poz=idx,
+                is_act=(tip != "ai_summary"),
+                x=layout["x"],
+                y=layout["y"],
+                w=3,
+                h=layout["h"]
+            )
             db.session.add(w)
 
         db.session.commit()

@@ -9,7 +9,7 @@ load_dotenv()
 class Config:
     """Базовый конфиг"""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-replace-in-prod")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-replace-in-prod"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = BASE_DIR / "app" / "static" / "uploads"
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB

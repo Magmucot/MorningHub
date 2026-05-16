@@ -235,7 +235,7 @@
                     </h6>
                     <div class="mb-3">
                         {{ form.back_img.label(class="form-label text-muted small") }}
-                        {{ form.back_img(class="form-control") }} {% for error in form.back_img.errors %}
+                        {{ form.back_img(class="form-control", accept=".png,.jpg,.jpeg,.webp") }} {% for error in form.back_img.errors %}
                         <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
                     </div>

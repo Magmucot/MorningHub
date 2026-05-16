@@ -139,11 +139,7 @@ def weath_prog(usr: User) -> Dict[str, Any]:
                 usr.weath_lat = lat
                 usr.weath_lon = lon
                 usr.weath_city = g_name
-                # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
-                # но обновляем объект.
             except requests.RequestException as geo_err:
-                # Если упал геокодинг, мы всё ещё можем попробовать wttr.in,
-                # так как он умеет искать город по имени без координат.
                 try:
                     return _fetch_from_wttr(usr.weath_city)
                 except Exception as wttr_err:

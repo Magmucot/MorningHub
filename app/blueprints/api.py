@@ -42,7 +42,6 @@ def api_crypto():
 @login_required
 def api_weather():
     res = weath_prog(current_user)
-    # Если город был разрешен, сохраняем координаты
     if _safe_commit():
         return jsonify(res)
     return jsonify({"error": "DB error"}), 500

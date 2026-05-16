@@ -106,17 +106,14 @@ def get_crypto_kurs(crypto_lst_str: str) -> Dict[str, Any]:
         if c.strip() and INPUT_NAMES.get(c.strip().lower(), "")
     ]
     
-    # Удаляем дубликаты
     c_lst = list(dict.fromkeys(c_lst))
     
     if not c_lst:
         return {}
 
-    # Попытка 1: CoinGecko (Primary API)
     try:
         return fetch_from_coingecko(c_lst)
     except requests.RequestException as e1:
-        # Попытка 2: Binance (Fallback API)
         try:
             return fetch_from_binance(c_lst)
         except requests.RequestException as e2:
