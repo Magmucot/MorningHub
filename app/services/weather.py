@@ -85,6 +85,47 @@ def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
     }
 
 
+@cached(cache=TTLCache(maxsize=128, ttl=3600))
+def _fetch_from_wttr(city: str) -> Dict[str, Any]:
+    url = f"https://wttr.in/{city}?format=j1&lang=ru"
+    r = requests.get(url, timeout=5)
+    r.raise_for_status()
+    d = r.json()
+    
+    curr = d["current_condition"][0]
+    today = d["weather"][0]
+    
+    desc_list = curr.get("lang_ru")
+    if desc_list:
+        desc = desc_list[0]["value"]
+    else:
+        desc = curr["weatherDesc"][0]["value"]
+        
+    temp_max = today["maxtempC"]
+    temp_min = today["mintempC"]
+    
+    # Try to find max precip probability from chances
+    max_precip = max(int(h.get("chanceofrain", 0)) for h in today["hourly"])
+    
+    chas_vremya = []
+    chas_temp = []
+    for item in today["hourly"]:
+        t_val = int(item["time"]) // 100
+        chas_vremya.append(f"{t_val:02d}:00")
+        chas_temp.append(float(item["tempC"]))
+        
+    return {
+        "date": today["date"],
+        "description": f"🌈 {desc}",
+        "temp_max": float(temp_max),
+        "temp_min": float(temp_min),
+        "precipitation_probability": max_precip,
+        "hourly_times": chas_vremya,
+        "hourly_temps": chas_temp,
+        "city": city,
+    }
+
+
 def weath_prog(usr: User) -> Dict[str, Any]:
     """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
     try:
@@ -93,15 +134,29 @@ def weath_prog(usr: User) -> Dict[str, Any]:
         g_name = usr.weath_city
 
         if lat is None or lon is None:
-            lat, lon, g_name = _get_city_geo(usr.weath_city)
-            usr.weath_lat = lat
-            usr.weath_lon = lon
-            usr.weath_city = g_name
-            # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
-            # но обновляем объект.
+            try:
+                lat, lon, g_name = _get_city_geo(usr.weath_city)
+                usr.weath_lat = lat
+                usr.weath_lon = lon
+                usr.weath_city = g_name
+                # Мы не коммитим здесь (это лучше сделать в роуте или вызывающем слое),
+                # но обновляем объект.
+            except requests.RequestException as geo_err:
+                # Если упал геокодинг, мы всё ещё можем попробовать wttr.in,
+                # так как он умеет искать город по имени без координат.
+                try:
+                    return _fetch_from_wttr(usr.weath_city)
+                except Exception as wttr_err:
+                    return {"error": f"Open-Meteo Geo: {str(geo_err)} | wttr.in: {str(wttr_err)}"}
 
-        d = _get_weath(lat, lon)
-        d["city"] = g_name
-        return d
+        try:
+            d = _get_weath(lat, lon)
+            d["city"] = g_name
+            return d
+        except requests.RequestException as e1:
+            try:
+                return _fetch_from_wttr(g_name)
+            except Exception as e2:
+                return {"error": f"Open-Meteo: {str(e1)} | wttr.in: {str(e2)}"}
     except Exception as e:
         return {"error": str(e)}
