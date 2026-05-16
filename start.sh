@@ -1,23 +1,31 @@
 #!/bin/bash
 # start.sh
 
-# Virtual Env
-if [ -d ".venv" ]; then
-    . .venv/bin/activate
-else
-    echo "Virtual environment (.venv) не найдены. Создайте их сначала"
-    exit 1
+# Загружаем переменные из .env, если файл существует
+if [ -f ".env" ]; then
+    set -a
+    source .env
+    set +a
 fi
 
-export FLASK_ENV=prod
-export SECRET_KEY=${SECRET_KEY:-$(openssl rand -hex 32)}
+if [ -d ".venv" ]; then
+    . .venv/bin/activate
+fi
+
+export FLASK_ENV=${FLASK_ENV:-prod}
+
+# Проверяем, задан ли SECRET_KEY (через окружение или .env)
+if [ -z "$SECRET_KEY" ]; then
+    export SECRET_KEY=$(openssl rand -hex 32)
+    echo "ВНИМАНИЕ: SECRET_KEY не задан! Сгенерирован случайный ключ."
+fi
+
 export DB_URL=${DB_URL:-sqlite:///$(pwd)/db/morninghub_prod.db}
 export AI_API_KEY=${AI_API_KEY:-""}
 
-echo "Запуск MorningHub в PROD моде..."
-
-
+echo "Запуск MorningHub..."
 echo "База данных: $DB_URL"
+
 python << EOF
 import os
 from app.models.widget import WidgetConfig
@@ -26,7 +34,7 @@ from app import create_app
 from app.extensions import db
 
 db_url = os.environ["DB_URL"]
-app = create_app('prod')
+app = create_app(os.environ.get("FLASK_ENV", "prod"))
 with app.app_context():
     if db_url.startswith("sqlite:///"):
         db_path = db_url.replace("sqlite:///", "", 1)
@@ -36,9 +44,4 @@ with app.app_context():
         db.create_all()
 EOF
 
-# Запуск Gunicorn
-# -w ${WEB_CONCURRENCY:-2}: worker processes (2 by default)
-# --bind 0.0.0.0:${PORT:-10000}: listen on all interfaces
-# --access-logfile -: log access to stdout
 exec gunicorn -w ${WEB_CONCURRENCY:-2} --bind 0.0.0.0:${PORT:-10000} --access-logfile - "run:app"
-"run:app"
