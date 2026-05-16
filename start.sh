@@ -21,7 +21,8 @@ echo "Запуск MorningHub в PROD моде..."
 echo "База данных: $DB_URL"
 python << EOF
 import os
-
+from app.models.widget import WidgetConfig
+from app.models.bookmark import Bookmark
 from app import create_app
 from app.extensions import db
 
@@ -38,6 +39,6 @@ EOF
 
 # Запуск Gunicorn
 # -w 4: 4 worker processes
-# --bind 0.0.0.0:5000: listen on all interfaces at port 5000
+# --bind 0.0.0.0:${PORT:-10000}: listen on all interfaces
 # --access-logfile -: log access to stdout
-exec gunicorn -w 4 --bind 0.0.0.0:5000 --access-logfile - "run:app"
+exec gunicorn -w 4 --bind 0.0.0.0:${PORT:-10000} --access-logfile - "run:app"

@@ -7,7 +7,8 @@ from app.extensions import csrf, db, login_manager
 
 def create_app(config_name: str = "dev") -> Flask:
     app = Flask(__name__)
-    config_obj = config_by_name[config_name]
+    config_name = (config_name or "dev").lower()
+    config_obj = config_by_name.get(config_name, config_by_name["dev"])
     app.config.from_object(config_obj)
 
     if hasattr(config_obj, "init_app"):

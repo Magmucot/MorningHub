@@ -1,4 +1,5 @@
 from typing import List
+import asyncio
 from app.models.widget import WidgetConfig
 from app.services.currency import get_val_kurs
 from app.services.it_news import get_it_news
@@ -14,7 +15,7 @@ def sobr_summary_t(act_wid_lst: List[WidgetConfig]) -> str:
     for w in act_wid_lst:
         if w.w_tip == "ai_summary":
             summary.append("\n--- ИИ-Пересказ Новостей ---")
-            res = get_ai_summary(w.user)
+            res = asyncio.run(get_ai_summary(w.user))
             if "error" in res:
                 summary.append(f"Ошибка: {res['error']}")
             else:

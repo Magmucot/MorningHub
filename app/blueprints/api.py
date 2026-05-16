@@ -43,8 +43,9 @@ def api_crypto():
 def api_weather():
     res = weath_prog(current_user)
     # Если город был разрешен, сохраняем координаты
-    _safe_commit()
-    return jsonify(res)
+    if _safe_commit():
+        return jsonify(res)
+    return jsonify({"error": "DB error"}), 500
 
 
 @bp.route("/bookmarks", methods=["GET", "POST"])
@@ -57,9 +58,9 @@ def api_bookmarks():
 
         bm = Bookmark(usr_id=current_user.id, title=data["title"], url=data["url"], icon=data.get("icon", "fa-link"))
         db.session.add(bm)
-        _safe_commit()
-        return jsonify({"success": True, "id": bm.id})
-
+        if _safe_commit():
+            return jsonify({"success": True, "id": bm.id})
+        return jsonify({"error": "DB error"}), 500
     bm_lst = Bookmark.query.filter_by(usr_id=current_user.id).all()
     return jsonify([{"id": bm.id, "title": bm.title, "url": bm.url, "icon": bm.icon} for bm in bm_lst])
 
@@ -71,8 +72,17 @@ def api_delete_bookmark(bm_id):
     if not bm:
         return jsonify({"error": "Not found"}), 404
     db.session.delete(bm)
-    _safe_commit()
-    return jsonify({"success": True})
+    if _safe_commit():
+        return jsonify({"success": True})
+    return jsonify({"error": "DB error"}), 500
+
+
+def _int_range(value, default, min_v, max_v):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(min_v, min(max_v, value))
 
 
 @bp.route("/widgets/save-grid", methods=["PATCH"])
@@ -89,13 +99,14 @@ def save_grid_widgets():
         tip = i.get("widget_type")
         if tip in wid_karta:
             w = wid_karta[tip]
-            w.x = i.get("x", w.x)
-            w.y = i.get("y", w.y)
-            w.w = i.get("w", w.w)
-            w.h = i.get("h", w.h)
+            w.x = _int_range(i.get("x"), w.x, 0, 11)
+            w.y = _int_range(i.get("y"), w.y, 0, 100)
+            w.w = _int_range(i.get("w"), w.w, 1, 12)
+            w.h = _int_range(i.get("h"), w.h, 1, 20)
 
-    _safe_commit()
-    return jsonify({"success": True})
+    if _safe_commit():
+        return jsonify({"success": True})
+    return jsonify({"error": "DB error"}), 500
 
 
 @bp.route("/widgets/ai-summary", methods=["GET"])
@@ -113,8 +124,9 @@ def lock_grid():
         return jsonify({"error": "Invalid payload"}), 400
 
     current_user.setka_lock = bool(data["is_grid_locked"])
-    _safe_commit()
-    return jsonify({"success": True, "is_grid_locked": current_user.setka_lock})
+    if _safe_commit():
+        return jsonify({"success": True, "is_grid_locked": current_user.setka_lock})
+    return jsonify({"error": "DB error"}), 500
 
 
 @bp.route("/widgets/ai-models", methods=["GET"])
@@ -157,11 +169,13 @@ def toggle_widget(w_tip: str):
     data = request.get_json()
     if not data or "is_active" not in data:
         return jsonify({"error": "Invalid payload"}), 400
-
-    w.is_act = bool(data["is_active"])
-    _safe_commit()
-
-    return jsonify({"success": True, "is_active": w.is_act})
+    is_act = data.get("is_active")
+    if not isinstance(is_act, bool):
+        return jsonify({"error": "Invalid boolean"}), 400
+    w.is_act = is_act
+    if _safe_commit():
+        return jsonify({"success": True, "is_active": w.is_act})
+    return jsonify({"error": "DB error"}), 500
 
 
 @bp.route("/export", methods=["GET"])

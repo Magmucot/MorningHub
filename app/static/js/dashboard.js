@@ -180,19 +180,27 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }
         else if (tip === 'it_news' || tip === 'game_news' || tip === 'politics' || tip === 'ai_models') {
-            html = '<div class="news-list px-1">';
+            const listDiv = document.createElement('div');
+            listDiv.className = 'news-list px-1';
             d.forEach(i => {
                 if (i.error) {
-                    html += `<div class="text-danger small">${i.error}</div>`;
+                    const errDiv = document.createElement('div');
+                    errDiv.className = 'text-danger small';
+                    errDiv.textContent = i.error;
+                    listDiv.appendChild(errDiv);
                 } else {
-                    html += `
-                        <div class="news-item">
-                            <a href="${i.link}" target="_blank" rel="noopener noreferrer">${i.title}</a>
-                        </div>
-                    `;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'news-item';
+                    const a = document.createElement('a');
+                    a.href = i.link || '#';
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = i.title || 'Без названия';
+                    itemDiv.appendChild(a);
+                    listDiv.appendChild(itemDiv);
                 }
             });
-            html += '</div>';
+            html = listDiv.outerHTML;
         }
         else if (tip === 'weather') {
             html = `

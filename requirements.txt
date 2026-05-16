@@ -43,3 +43,4 @@ typing-inspection==0.4.2
 urllib3==2.7.0
 werkzeug==3.1.8
 wtforms==3.2.2
+psycopg2-binary==2.9.9

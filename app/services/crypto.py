@@ -18,7 +18,7 @@ KNOWN_CRYPTOS = {
     "notcoin": "NOT",
 }
 
-IPUT_NAMES = {
+INPUT_NAMES = {
     "btc": "bitcoin",
     "eth": "ethereum",
     "ton": "the-open-network",
@@ -31,12 +31,28 @@ IPUT_NAMES = {
     "dot": "polkadot",
     "ltc": "litecoin",
     "not": "notcoin",
+    "bitcoin": "bitcoin",
+    "ethereum": "ethereum",
+    "the-open-network": "the-open-network",
+    "solana": "solana",
+    "binancecoin": "binancecoin",
+    "ripple": "ripple",
+    "dogecoin": "dogecoin",
+    "cardano": "cardano",
+    "tron": "tron",
+    "polkadot": "polkadot",
+    "litecoin": "litecoin",
+    "notcoin": "notcoin",
 }
 
 
 @cached(cache=TTLCache(maxsize=100, ttl=600))
 def get_crypto_kurs(crypto_lst_str: str) -> Dict[str, Any]:
-    c_lst = [c.strip().lower() for c in crypto_lst_str.split(",") if c.strip()]
+    c_lst = [
+        INPUT_NAMES.get(c.strip().lower(), "")
+        for c in crypto_lst_str.split(",")
+        if c.strip() and INPUT_NAMES.get(c.strip().lower(), "")
+    ]
     if not c_lst:
         return {}
 

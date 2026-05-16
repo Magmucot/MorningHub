@@ -34,4 +34,9 @@ class ProdConfig(Config):
             raise ValueError("Переменная среды DB_URL требуется в рабочей среде.")
 
 
-config_by_name = dict(dev=DevConfig, prod=ProdConfig)
+config_by_name = {
+    "dev": DevConfig,
+    "development": DevConfig,
+    "prod": ProdConfig,
+    "production": ProdConfig,
+}

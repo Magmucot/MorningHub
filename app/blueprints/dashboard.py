@@ -40,10 +40,26 @@ def _prover_wid_def(usr_id: int):
     est_tipi = {w.w_tip for w in est_wid}
 
     nov_wid = []
+    start_pos = len(est_wid)
+    offset = 0
+
     for tip in wid_def:
         if tip not in est_tipi:
-            # Расставляем новые виджеты ниже существующих (или по умолчанию)
-            nov_wid.append(WidgetConfig(usr_id=usr_id, w_tip=tip, is_act=True))
+            pos = start_pos + offset
+            # Расставляем новые виджеты ниже существующих, формируя сетку (3 колонки шириной по 4, например)
+            nov_wid.append(
+                WidgetConfig(
+                    usr_id=usr_id,
+                    w_tip=tip,
+                    is_act=True,
+                    poz=pos,
+                    x=(pos % 4) * 3,
+                    y=(pos // 4) * 3,
+                    w=3,
+                    h=3
+                )
+            )
+            offset += 1
 
     if nov_wid:
         db.session.add_all(nov_wid)
@@ -55,7 +71,7 @@ def _prover_wid_def(usr_id: int):
 def index():
     _prover_wid_def(current_user.id)
     # Получаем активные виджеты пользователя (для GridStack)
-    wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id, is_act=True).all()
+    wid_lst = WidgetConfig.query.filter_by(usr_id=current_user.id, is_act=True).order_by(WidgetConfig.poz.asc()).all()
     bm_lst = Bookmark.query.filter_by(usr_id=current_user.id).all()
     return render_template("dashboard/index.html", widgets=wid_lst, bookmarks=bm_lst)
 
@@ -77,7 +93,9 @@ def settings():
                     current_user.weath_lon = None
 
             # Настройки ИИ
-            current_user.ai_key = request.form.get("ai_api_key", "").strip() or None
+            new_key = request.form.get("ai_api_key", "").strip()
+            if new_key:
+                current_user.ai_key = new_key
             current_user.ai_url = request.form.get("ai_base_url", "").strip() or None
             current_user.ai_model = request.form.get("ai_model", "").strip() or None
 

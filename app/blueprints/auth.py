@@ -35,7 +35,7 @@ def register():
             "crypto",
         ]
         for idx, tip in enumerate(wid_def):
-            w = WidgetConfig(usr_id=usr.id, w_tip=tip, poz=idx, is_act=True)
+            w = WidgetConfig(usr_id=usr.id, w_tip=tip, poz=idx, is_act=(tip != "ai_summary"))
             db.session.add(w)
 
         db.session.commit()
