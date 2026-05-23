@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 # Кэш на 1 час (3600 секунд)
 @cached(cache=TTLCache(maxsize=100, ttl=3600))
-def get_val_kurs(val_lst_str: str) -> Dict[str, Any]:
+def get_val_rates(val_lst_str: str) -> Dict[str, Any]:
     v_lst = [c.strip().upper() for c in val_lst_str.split(",") if c.strip()]
     if not v_lst:
         return {}

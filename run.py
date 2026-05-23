@@ -12,4 +12,7 @@ if __name__ == "__main__":
         # Create all tables (in real life use Alembic for migrations)
         db.create_all()
 
+    from update_db import update_db_schema
+    update_db_schema(app)
+
     app.run(host="0.0.0.0", port=5000)

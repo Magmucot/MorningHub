@@ -69,10 +69,20 @@ def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
 
     import datetime
 
-    curr_h = datetime.datetime.now().hour
-    # Open-Meteo возвращает 48 часов, т.к forecast_days=2
-    chas_vremya = [t.split("T")[1] for t in hourly["time"][curr_h : curr_h + 12]]
-    chas_temp = hourly["temperature_2m"][curr_h : curr_h + 12]
+    off = payload.get("utc_offset_seconds", 0)
+    u_now = datetime.datetime.now(datetime.timezone.utc)
+    l_now = u_now + datetime.timedelta(seconds=off)
+    t_iso = l_now.strftime("%Y-%m-%dT%H:00")
+
+    times = hourly["time"]
+    start = 0
+    for idx, val in enumerate(times):
+        if val >= t_iso:
+            start = idx
+            break
+
+    hr_times = [t.split("T")[1] for t in times[start : start + 12]]
+    hr_temps = hourly["temperature_2m"][start : start + 12]
 
     return {
         "date": daily["time"][0],
@@ -80,8 +90,8 @@ def _get_weath(lat: float, lon: float) -> Dict[str, Any]:
         "temp_max": daily["temperature_2m_max"][0],
         "temp_min": daily["temperature_2m_min"][0],
         "precipitation_probability": daily["precipitation_probability_max"][0],
-        "hourly_times": chas_vremya,
-        "hourly_temps": chas_temp,
+        "hourly_times": hr_times,
+        "hourly_temps": hr_temps,
     }
 
 
@@ -105,43 +115,43 @@ def _fetch_from_wttr(city: str) -> Dict[str, Any]:
     temp_min = today["mintempC"]
     
     # Try to find max precip probability from chances
-    max_precip = max(int(h.get("chanceofrain", 0)) for h in today["hourly"])
-    
-    chas_vremya = []
-    chas_temp = []
-    for item in today["hourly"]:
+    max_precip = max((int(h.get("chanceofrain", 0)) for h in today.get("hourly", [])), default=0)
+
+    hr_times = []
+    hr_temps = []
+    for item in today.get("hourly", []):
         t_val = int(item["time"]) // 100
-        chas_vremya.append(f"{t_val:02d}:00")
-        chas_temp.append(float(item["tempC"]))
-        
+        hr_times.append(f"{t_val:02d}:00")
+        hr_temps.append(float(item["tempC"]))
+
     return {
         "date": today["date"],
         "description": f"🌈 {desc}",
         "temp_max": float(temp_max),
         "temp_min": float(temp_min),
         "precipitation_probability": max_precip,
-        "hourly_times": chas_vremya,
-        "hourly_temps": chas_temp,
+        "hourly_times": hr_times,
+        "hourly_temps": hr_temps,
         "city": city,
     }
 
 
-def weath_prog(usr: User) -> Dict[str, Any]:
+def pog_fc(usr: User) -> Dict[str, Any]:
     """Получает прогноз для пользователя, разрешая город через геокодинг, если нужно."""
     try:
         lat = usr.weath_lat
         lon = usr.weath_lon
-        g_name = usr.weath_city
+        g_name = usr.pog_city
 
         if lat is None or lon is None:
             try:
-                lat, lon, g_name = _get_city_geo(usr.weath_city)
+                lat, lon, g_name = _get_city_geo(usr.pog_city)
                 usr.weath_lat = lat
                 usr.weath_lon = lon
-                usr.weath_city = g_name
+                usr.pog_city = g_name
             except requests.RequestException as geo_err:
                 try:
-                    return _fetch_from_wttr(usr.weath_city)
+                    return _fetch_from_wttr(usr.pog_city)
                 except Exception as wttr_err:
                     return {"error": f"Open-Meteo Geo: {str(geo_err)} | wttr.in: {str(wttr_err)}"}
 

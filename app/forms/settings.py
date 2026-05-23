@@ -5,6 +5,6 @@ from wtforms import SubmitField
 
 class SettingsForm(FlaskForm):
     back_img = FileField(
-        "Фоновое изображение", validators=[FileAllowed(["jpg", "jpeg", "png", "webp"], "Только изображения!")]
+        "Фоновое изображение", validators=[FileAllowed(["jpg", "jpeg", "png", "webp", "gif"], "Только изображения (включая GIF)!")]
     )
     submit = SubmitField("Сохранить настройки")

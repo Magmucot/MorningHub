@@ -24,4 +24,4 @@ class WidgetConfig(db.Model):
     __table_args__ = (UniqueConstraint("usr_id", "w_tip", name="uix_u_w_tip"),)
 
     def __repr__(self) -> str:
-        return f"<WidgetConfig {self.w_tip} (Akt: {self.is_act})>"
+        return f"<WidgetConfig {self.w_tip} (act: {self.is_act})>"

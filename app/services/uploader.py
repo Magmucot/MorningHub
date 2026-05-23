@@ -4,14 +4,14 @@ from typing import Optional
 from werkzeug.datastructures import FileStorage
 from flask import current_app
 
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
-ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/webp"}
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
+ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/webp", "image/gif"}
 
 
-def _razresh_f(f_imya: str, mimetype: str) -> bool:
+def _allow_f(f_name: str, mimetype: str) -> bool:
     if mimetype not in ALLOWED_MIME_TYPES:
         return False
-    return "." in f_imya and f_imya.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in f_name and f_name.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def save_back_img(f: FileStorage) -> Optional[str]:
@@ -19,17 +19,17 @@ def save_back_img(f: FileStorage) -> Optional[str]:
     if not f or not f.filename:
         return None
 
-    if not f.mimetype or not _razresh_f(f.filename, f.mimetype):
+    if not f.mimetype or not _allow_f(f.filename, f.mimetype):
         raise ValueError("Недопустимый тип файла или расширение.")
 
-    rassh = f.filename.rsplit(".", 1)[1].lower()
-    news_imya = f"{uuid.uuid4().hex}.{rassh}"
+    ext = f.filename.rsplit(".", 1)[1].lower()
+    new_name = f"{uuid.uuid4().hex}.{ext}"
 
-    f_papka = current_app.config.get("UPLOAD_FOLDER")
-    if not f_papka:
+    f_dir = current_app.config.get("UPLOAD_FOLDER")
+    if not f_dir:
         raise RuntimeError("UPLOAD_FOLDER не настроен.")
 
-    f_put = os.path.join(f_papka, news_imya)
+    f_path = os.path.join(f_dir, new_name)
 
-    f.save(f_put)
-    return news_imya
+    f.save(f_path)
+    return new_name

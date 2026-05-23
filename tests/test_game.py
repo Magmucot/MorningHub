@@ -1,7 +1,6 @@
 from app import create_app
-from flask import url_for
-from app.services.game_news import igry_nov
+from app.services.game_news import get_game_news
 
 app = create_app()
 with app.app_context():
-    print(igry_nov())
+    print(get_game_news())

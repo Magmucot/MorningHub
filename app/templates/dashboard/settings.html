@@ -67,7 +67,7 @@
                             type="text"
                             name="weather_city"
                             class="form-control"
-                            value="{{ current_user.weath_city }}"
+                            value="{{ current_user.pog_city }}"
                         />
                     </div>
 
@@ -116,19 +116,19 @@
                         <select name="clock_style" class="form-select">
                             <option
                                 value="both"
-                                {% if current_user.clock_stile == "both" %}selected{% endif %}
+                                {% if current_user.clock_stil == "both" %}selected{% endif %}
                             >
                                 Аналоговые и Цифровые
                             </option>
                             <option
                                 value="analog"
-                                {% if current_user.clock_stile == "analog" %}selected{% endif %}
+                                {% if current_user.clock_stil == "analog" %}selected{% endif %}
                             >
                                 Только Аналоговые
                             </option>
                             <option
                                 value="digital"
-                                {% if current_user.clock_stile == "digital" %}selected{% endif %}
+                                {% if current_user.clock_stil == "digital" %}selected{% endif %}
                             >
                                 Только Цифровые
                             </option>
@@ -198,6 +198,25 @@
                             </option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small"
+                            >Режим расположения виджетов</label
+                        >
+                        <select name="is_fr" class="form-select">
+                            <option
+                                value="false"
+                                {% if not current_user.is_fr %}selected{% endif %}
+                            >
+                                Сетка (12 колонок)
+                            </option>
+                            <option
+                                value="true"
+                                {% if current_user.is_fr %}selected{% endif %}
+                            >
+                                Свободный (120 колонок)
+                            </option>
+                        </select>
+                    </div>
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label text-muted small"
@@ -207,7 +226,7 @@
                                 type="color"
                                 name="widget_color"
                                 class="form-control form-control-color w-100"
-                                value="{{ current_user.wid_cvet }}"
+                                value="{{ current_user.wid_clr }}"
                             />
                         </div>
                         <div class="col-6 mb-3">
@@ -235,9 +254,73 @@
                     </h6>
                     <div class="mb-3">
                         {{ form.back_img.label(class="form-label text-muted small") }}
-                        {{ form.back_img(class="form-control", accept=".png,.jpg,.jpeg,.webp") }} {% for error in form.back_img.errors %}
+                        {{ form.back_img(class="form-control", accept=".png,.jpg,.jpeg,.webp,.gif") }} {% for error in form.back_img.errors %}
                         <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label text-muted small"
+                                >Масштаб обоев</label
+                            >
+                            <select name="bg_sz" class="form-select">
+                                <option
+                                    value="cover"
+                                    {% if current_user.bg_sz == "cover" %}selected{% endif %}
+                                >
+                                    Заполнение (Cover)
+                                </option>
+                                <option
+                                    value="contain"
+                                    {% if current_user.bg_sz == "contain" %}selected{% endif %}
+                                >
+                                    Вписать (Contain)
+                                </option>
+                                <option
+                                    value="auto"
+                                    {% if current_user.bg_sz == "auto" %}selected{% endif %}
+                                >
+                                    Плиткой (Tile)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label text-muted small"
+                                >Выравнивание обоев</label
+                            >
+                            <select name="bg_ps" class="form-select">
+                                <option
+                                    value="center"
+                                    {% if current_user.bg_ps == "center" %}selected{% endif %}
+                                >
+                                    По центру
+                                </option>
+                                <option
+                                    value="top"
+                                    {% if current_user.bg_ps == "top" %}selected{% endif %}
+                                >
+                                    Сверху
+                                </option>
+                                <option
+                                    value="left"
+                                    {% if current_user.bg_ps == "left" %}selected{% endif %}
+                                >
+                                    Слева
+                                </option>
+                                <option
+                                    value="right"
+                                    {% if current_user.bg_ps == "right" %}selected{% endif %}
+                                >
+                                    Справа
+                                </option>
+                                <option
+                                    value="bottom"
+                                    {% if current_user.bg_ps == "bottom" %}selected{% endif %}
+                                >
+                                    Снизу
+                                </option>
+                            </select>
+                        </div>
                     </div>
                     {% if current_user.back_img %}
                     <div class="mb-3 text-center">

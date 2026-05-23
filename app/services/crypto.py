@@ -99,7 +99,7 @@ def fetch_from_binance(c_lst: list[str]) -> Dict[str, Any]:
 
 
 @cached(cache=TTLCache(maxsize=100, ttl=600))
-def get_crypto_kurs(crypto_lst_str: str) -> Dict[str, Any]:
+def get_crypto_rates(crypto_lst_str: str) -> Dict[str, Any]:
     c_lst = [
         INPUT_NAMES.get(c.strip().lower(), "")
         for c in crypto_lst_str.split(",")

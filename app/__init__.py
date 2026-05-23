@@ -14,9 +14,6 @@ def create_app(config_name: str = "dev") -> Flask:
     if hasattr(config_obj, "init_app"):
         config_obj.init_app(app)
 
-    # Поддержка пользовательского имени переменной БД для Flask-SQLAlchemy
-    if "SQLALCHEMY_DB_URI" in app.config:
-        app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DB_URI"]
     upload_folder = app.config.get("UPLOAD_FOLDER")
     if upload_folder and not os.path.exists(upload_folder):
         os.makedirs(upload_folder, exist_ok=True)

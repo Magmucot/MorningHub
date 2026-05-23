@@ -20,20 +20,20 @@ def get_ai_models_news(lim: int = 5) -> List[Dict[str, Any]]:
             if len(n_lst) >= lim:
                 break
 
-            zagol = art.get_text(strip=True)
+            title = art.get_text(strip=True)
 
             l_tag = art.find("a")
             if not l_tag:
                 l_tag = art.find_parent("a")
 
-            ssyl = "https://artificialanalysis.ai"
+            url = "https://artificialanalysis.ai"
             if l_tag and l_tag.get("href"):
                 href = l_tag.get("href")
-                ssyl = href if href.startswith("http") else f"https://artificialanalysis.ai{href}"
+                url = href if href.startswith("http") else f"https://artificialanalysis.ai{href}"
             else:
-                ssyl = "https://artificialanalysis.ai/changelog"
+                url = "https://artificialanalysis.ai/changelog"
 
-            n_lst.append({"title": zagol, "link": ssyl})
+            n_lst.append({"title": title, "link": url})
 
         return n_lst
     except Exception as e:

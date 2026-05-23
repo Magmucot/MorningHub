@@ -43,6 +43,3 @@ def get_crypto_rates(crypto_tracking_str: str) -> Dict[str, Any]:
         return result
     except requests.RequestException as e:
         return {"error": str(e)}
-
-
-print(get_crypto_rates("bitcoin,ethereum"))

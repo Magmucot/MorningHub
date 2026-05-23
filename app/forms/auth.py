@@ -28,6 +28,6 @@ class RegisterForm(FlaskForm):
             raise ValidationError("Пароль должен содержать хотя бы одну цифру.")
 
     def validate_username(self, field: StringField) -> None:
-        usr = User.query.filter_by(usr_name=field.data).first()
+        usr = User.query.filter_by(u_name=field.data).first()
         if usr:
             raise ValidationError("Это имя пользователя уже занято.")

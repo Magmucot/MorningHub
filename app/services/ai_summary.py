@@ -2,7 +2,6 @@ import asyncio
 import os
 from itertools import chain
 from typing import Any, Dict
-
 from asyncache import cached
 from cachetools import TTLCache, keys
 from dotenv import load_dotenv
@@ -27,7 +26,7 @@ def _user_cache_key(user: User, *args: Any, **kwargs: Any) -> tuple:
 
 
 @cached(cache=TTLCache(maxsize=128, ttl=7200), key=_user_cache_key)
-async def get_ai_summary(user: User) -> Dict[str, Any]:
+async def get_ai_sum(user: User) -> Dict[str, Any]:
     api_key: str | None = user.ai_key or os.environ.get("OPENAI_API_KEY")
     base_url: str | None = user.ai_url or os.environ.get("OPENAI_BASE_URL")
 

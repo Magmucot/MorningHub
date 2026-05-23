@@ -13,13 +13,16 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    usr_name: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    u_name: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
     pass_hash: Mapped[str] = mapped_column(String(256), nullable=False)
     back_img: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    is_fr: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    bg_sz: Mapped[str] = mapped_column(String(20), default="cover", nullable=False)
+    bg_ps: Mapped[str] = mapped_column(String(20), default="center", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=False)
 
     # Погода
-    weath_city: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
+    pog_city: Mapped[str] = mapped_column(String(120), default="Москва", nullable=False)
     weath_lat: Mapped[Optional[float]] = mapped_column(nullable=True)
     weath_lon: Mapped[Optional[float]] = mapped_column(nullable=True)
 
@@ -29,17 +32,17 @@ class User(UserMixin, db.Model):
     ai_model: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
     # UI
-    setka_lock: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    grid_lock: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     theme: Mapped[str] = mapped_column(String(20), default="light", nullable=False)
-    wid_cvet: Mapped[str] = mapped_column(String(20), default="#ffffff", nullable=False)
-    wid_prozr: Mapped[float] = mapped_column(nullable=False, default=0.95)
+    wid_clr: Mapped[str] = mapped_column(String(20), default="#ffffff", nullable=False)
+    wid_op: Mapped[float] = mapped_column(nullable=False, default=0.95)
 
     # Виджеты
     crypto_lst: Mapped[str] = mapped_column(
         String(255), default="bitcoin,ethereum,the-open-network,solana", nullable=False
     )
     val_lst: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
-    clock_stile: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
+    clock_stil: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
 
     widgets: Mapped[List["WidgetConfig"]] = relationship(
         "WidgetConfig",
@@ -61,7 +64,7 @@ class User(UserMixin, db.Model):
 
     @property
     def widget_opacity(self) -> float:
-        value = self.wid_prozr
+        value = self.wid_op
         if value is None:
             return 0.95
         if value > 1:
@@ -69,4 +72,4 @@ class User(UserMixin, db.Model):
         return value
 
     def __repr__(self) -> str:
-        return f"<User {self.usr_name}>"
+        return f"<User {self.u_name}>"

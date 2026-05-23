@@ -4,22 +4,51 @@ document.addEventListener("DOMContentLoaded", () => {
     const meta_csrf = document.querySelector('meta[name="csrf-token"]');
     const tok_csrf = meta_csrf ? meta_csrf.getAttribute('content') : null;
 
+    function handleResponse(r) {
+        if (!r.ok) {
+            return r.json().then(d => {
+                throw new Error(d.error || 'Server error');
+            }).catch(() => {
+                throw new Error('Network error or invalid JSON');
+            });
+        }
+        return r.json();
+    }
+
     // GridStack (Drag & Drop, Resize)
     const kon_setka = document.querySelector('.grid-stack');
     let setka;
     if (kon_setka && typeof GridStack !== 'undefined') {
         const is_lock = kon_setka.getAttribute('data-locked') === 'true';
+        const is_free = kon_setka.getAttribute('data-free') === 'true';
+        // Генерируем CSS для 120 колонок, так как GridStack по умолчанию содержит стили только до 12
+        if (is_free) {
+            let css = '.gs-120 > .grid-stack-item { position: absolute; }\n';
+            for (let i = 1; i <= 120; i++) {
+                const w = (i / 120) * 100;
+                css += `.gs-120 > .grid-stack-item[gs-w="${i}"] { width: ${w}%; }\n`;
+            }
+            for (let i = 0; i < 120; i++) {
+                const x = (i / 120) * 100;
+                css += `.gs-120 > .grid-stack-item[gs-x="${i}"] { left: ${x}%; }\n`;
+            }
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = css;
+            document.head.appendChild(style);
+        }
+
         setka = GridStack.init({
-            cellHeight: 50,
-            margin: 8,
-            disableOneColumnMode: false,
+            column: is_free ? 120 : 12,
+            cellHeight: is_free ? 10 : 50,
+            margin: is_free ? 0 : 8,
+            disableOneColumnMode: true,  // ne svalivat v 1-kolonku na uzkih ekranah
             float: true,
             staticGrid: is_lock,
             handle: '.drag-handle'
         });
 
-        setka.on('change', function (ev, i_spis) {
-            if (!i_spis) return;
+        function saveLayout() {
             const nov_layaut = [];
             setka.engine.nodes.forEach(n => {
                 const el = n.el;
@@ -43,9 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         'X-CSRFToken': tok_csrf
                     },
                     body: JSON.stringify({ items: nov_layaut })
-                }).catch(err => console.error('Oshibka sohran setki:', err));
+                })
+                    .then(handleResponse)
+                    .catch(err => console.error('Oshibka sohran setki:', err));
             }
-        });
+        }
+
+        setka.on('dragstop', saveLayout);
+        setka.on('resizestop', saveLayout);
     }
 
     const kn_lock = document.getElementById('lockGridBtn');
@@ -62,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ is_grid_locked: bud_lock })
             })
-                .then(r => r.json())
+                .then(handleResponse)
                 .then(d => {
                     if (d.success) {
                         kon_setka.setAttribute('data-locked', d.is_grid_locked);
@@ -76,7 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             kn_lock.innerHTML = '<i class="fas fa-unlock"></i> <span>Зафиксировать сетку</span>';
                         }
                     }
-                });
+                })
+                .catch(err => alert('Ошибка при сохранении блокировки сетки: ' + err.message));
         });
     }
 
@@ -98,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (u) {
             fetch(u)
-                .then(r => r.json())
+                .then(handleResponse)
                 .then(d => {
                     risuy_wid(tip, d, div_kon);
                 })
@@ -429,10 +464,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': tok_csrf },
                 body: JSON.stringify({ title: t_inp.value, url: u_inp.value, icon: 'fa-star' })
-            }).then(r => r.json()).then(d => {
-                if (d.success) window.location.reload();
-                else alert('Ошибка: ' + d.error);
-            });
+            })
+                .then(handleResponse)
+                .then(d => {
+                    if (d.success) window.location.reload();
+                    else alert('Ошибка: ' + d.error);
+                })
+                .catch(err => alert('Ошибка при добавлении закладки: ' + err.message));
         };
     }
 
@@ -445,9 +483,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': tok_csrf },
                 body: JSON.stringify({ is_active: akt })
-            }).then(r => r.json()).then(d => {
-                if (d.error) { alert(`Ошибка: ${d.error}`); e.target.checked = !akt; }
-            });
+            })
+                .then(handleResponse)
+                .then(d => {
+                    if (d.error) { alert(`Ошибка: ${d.error}`); e.target.checked = !akt; }
+                })
+                .catch(err => {
+                    alert(`Ошибка при переключении виджета: ${err.message}`);
+                    e.target.checked = !akt;
+                });
         };
     });
 });

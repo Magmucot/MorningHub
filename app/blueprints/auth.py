@@ -1,7 +1,10 @@
+import logging
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user, current_user
 
 from app.extensions import db
+
+logger = logging.getLogger(__name__)
 from app.forms.auth import LoginForm, RegisterForm
 from app.models.user import User
 from app.models.widget import WidgetConfig
@@ -16,56 +19,62 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        usr = User(usr_name=form.username.data)
+        usr = User(u_name=form.username.data)
         usr.set_pass(form.password.data)
-        db.session.add(usr)
-        db.session.flush()
+        try:
+            db.session.add(usr)
+            db.session.flush()
 
-        wid_def = [
-            "it_news",
-            "game_news",
-            "currency",
-            "politics",
-            "ai_models",
-            "analog_clock",
-            "calendar",
-            "ai_summary",
-            "weather",
-            "bookmarks",
-            "crypto",
-        ]
-        
-        default_layout = {
-            "it_news": {"x": 0, "y": 0, "h": 6},
-            "politics": {"x": 0, "y": 6, "h": 6},
-            "ai_models": {"x": 0, "y": 12, "h": 6},
-            "game_news": {"x": 0, "y": 18, "h": 6},
-            "analog_clock": {"x": 3, "y": 0, "h": 4},
-            "calendar": {"x": 3, "y": 4, "h": 8},
-            "bookmarks": {"x": 3, "y": 12, "h": 6},
-            "currency": {"x": 6, "y": 0, "h": 8},
-            "crypto": {"x": 6, "y": 8, "h": 8},
-            "ai_summary": {"x": 9, "y": 0, "h": 10},
-            "weather": {"x": 9, "y": 10, "h": 8},
-        }
+            wid_def = [
+                "it_news",
+                "game_news",
+                "currency",
+                "politics",
+                "ai_models",
+                "analog_clock",
+                "calendar",
+                "ai_summary",
+                "weather",
+                "bookmarks",
+                "crypto",
+            ]
+            
+            default_layout = {
+                "it_news": {"x": 0, "y": 0, "h": 6},
+                "politics": {"x": 0, "y": 6, "h": 6},
+                "ai_models": {"x": 0, "y": 12, "h": 6},
+                "game_news": {"x": 0, "y": 18, "h": 6},
+                "analog_clock": {"x": 3, "y": 0, "h": 4},
+                "calendar": {"x": 3, "y": 4, "h": 8},
+                "bookmarks": {"x": 3, "y": 12, "h": 6},
+                "currency": {"x": 6, "y": 0, "h": 8},
+                "crypto": {"x": 6, "y": 8, "h": 8},
+                "ai_summary": {"x": 9, "y": 0, "h": 10},
+                "weather": {"x": 9, "y": 10, "h": 8},
+            }
 
-        for idx, tip in enumerate(wid_def):
-            layout = default_layout.get(tip, {"x": (idx % 4) * 3, "y": (idx // 4) * 6, "h": 6})
-            w = WidgetConfig(
-                usr_id=usr.id,
-                w_tip=tip,
-                poz=idx,
-                is_act=(tip != "ai_summary"),
-                x=layout["x"],
-                y=layout["y"],
-                w=3,
-                h=layout["h"]
-            )
-            db.session.add(w)
+            for idx, tip in enumerate(wid_def):
+                layout = default_layout.get(tip, {"x": (idx % 4) * 3, "y": (idx // 4) * 6, "h": 6})
+                w = WidgetConfig(
+                    usr_id=usr.id,
+                    w_tip=tip,
+                    poz=idx,
+                    is_act=(tip != "ai_summary"),
+                    x=layout["x"],
+                    y=layout["y"],
+                    w=3,
+                    h=layout["h"]
+                )
+                db.session.add(w)
 
-        db.session.commit()
-        flash("Регистрация успешна! Теперь вы можете войти.", "success")
-        return redirect(url_for("auth.login"))
+            db.session.commit()
+            flash("Регистрация успешна! Теперь вы можете войти.", "success")
+            return redirect(url_for("auth.login"))
+        except Exception as e:
+            db.session.rollback()
+            logger.exception("Ошибка при регистрации в БД: %s", e)
+            flash("Произошла ошибка при регистрации. Пожалуйста, попробуйте позже.", "danger")
+            return render_template("auth/register.html", form=form), 500
 
     return render_template("auth/register.html", form=form)
 
@@ -77,7 +86,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        usr = User.query.filter_by(usr_name=form.username.data).first()
+        usr = User.query.filter_by(u_name=form.username.data).first()
         if usr and usr.check_pass(form.password.data):
             login_user(usr)
             return redirect(url_for("dashboard.index"))

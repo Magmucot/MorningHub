@@ -19,18 +19,18 @@ class DevConfig(Config):
     """Разраб сборка"""
 
     DEBUG = True
-    SQLALCHEMY_DB_URI = os.environ.get("DB_URL", f"sqlite:///{BASE_DIR / 'db' / 'morninghub_dev.db'}")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL", f"sqlite:///{BASE_DIR / 'db' / 'morninghub_dev.db'}")
 
 
 class ProdConfig(Config):
     """Продуктовая сборка"""
 
     DEBUG = False
-    SQLALCHEMY_DB_URI = os.environ.get("DB_URL")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL")
 
     @classmethod
     def init_app(cls, app):
-        if not cls.SQLALCHEMY_DB_URI:
+        if not cls.SQLALCHEMY_DATABASE_URI:
             raise ValueError("Переменная среды DB_URL требуется в рабочей среде.")
 
 
