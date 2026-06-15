@@ -135,6 +135,35 @@
                         </select>
                     </div>
 
+                    <h6 class="border-bottom pb-2 mt-4 mb-3">🤖 AI Модели — источник данных</h6>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Откуда показывать новые модели</label>
+                        <select name="ai_models_src" class="form-select">
+                            <option
+                                value="both"
+                                {% if current_user.ai_models_src == "both" %}selected{% endif %}
+                            >
+                                Оба источника (Artificial Analysis + OpenRouter)
+                            </option>
+                            <option
+                                value="artificial"
+                                {% if current_user.ai_models_src == "artificial" %}selected{% endif %}
+                            >
+                                Только Artificial Analysis (changelog)
+                            </option>
+                            <option
+                                value="openrouter"
+                                {% if current_user.ai_models_src == "openrouter" %}selected{% endif %}
+                            >
+                                Только OpenRouter (новые модели)
+                            </option>
+                        </select>
+                        <div class="form-text" style="font-size: 0.7rem">
+                            OpenRouter показывает последние добавленные модели с ценой и метаданными.
+                            Artificial Analysis — новости из журнала изменений.
+                        </div>
+                    </div>
+
                     <h6 class="border-bottom pb-2 mt-4 mb-3">
                         ✨ Настройки ИИ (Сводка)
                     </h6>

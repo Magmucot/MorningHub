@@ -12,6 +12,7 @@ from app.services.currency import get_val_rates
 from app.services.it_news import get_it_news
 from app.services.politics import get_polit_news
 from app.services.ai_models import get_ai_models_news
+from app.services.openrouter_news import get_openrouter_news
 from app.services.ai_summary import get_ai_sum
 from app.services.weather import pog_fc
 from app.services.crypto import get_crypto_rates
@@ -157,7 +158,16 @@ def lock_grid():
 @bp.route("/widgets/ai-models", methods=["GET"])
 @login_required
 def api_ai_models():
-    return jsonify(get_ai_models_news())
+    src = getattr(current_user, 'ai_models_src', 'both')
+    items = []
+    if src in ('artificial', 'both'):
+        aa = get_ai_models_news()
+        for i in aa:
+            i.setdefault('source', 'artificial')
+        items.extend(aa)
+    if src in ('openrouter', 'both'):
+        items.extend(get_openrouter_news())
+    return jsonify(items)
 
 
 @bp.route("/widgets/it-news", methods=["GET"])

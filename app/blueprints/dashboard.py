@@ -139,6 +139,12 @@ def settings():
             if "clock_style" in request.form:
                 current_user.clock_stil = request.form.get("clock_style", "both")
 
+            # Источник виджета AI Моделей
+            if "ai_models_src" in request.form:
+                src_val = request.form.get("ai_models_src", "both")
+                if src_val in ("artificial", "openrouter", "both"):
+                    current_user.ai_models_src = src_val
+
             # Настройки UI
             t = request.form.get("theme")
             if t in ["light", "dark"]:

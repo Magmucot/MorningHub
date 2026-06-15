@@ -43,6 +43,7 @@ class User(UserMixin, db.Model):
     )
     val_lst: Mapped[str] = mapped_column(String(255), default="USD,EUR,CNY,GBP", nullable=False)
     clock_stil: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
+    ai_models_src: Mapped[str] = mapped_column(String(20), default="both", nullable=False)
 
     widgets: Mapped[List["WidgetConfig"]] = relationship(
         "WidgetConfig",

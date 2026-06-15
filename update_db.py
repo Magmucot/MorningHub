@@ -36,7 +36,8 @@ def update_db_schema(app):
             new_cols = [
                 ("is_fr", "BOOLEAN DEFAULT FALSE NOT NULL"),
                 ("bg_sz", "VARCHAR(20) DEFAULT 'cover' NOT NULL"),
-                ("bg_ps", "VARCHAR(20) DEFAULT 'center' NOT NULL")
+                ("bg_ps", "VARCHAR(20) DEFAULT 'center' NOT NULL"),
+                ("ai_models_src", "VARCHAR(20) DEFAULT 'both' NOT NULL"),
             ]
             
             for col_name, col_sql in new_cols:

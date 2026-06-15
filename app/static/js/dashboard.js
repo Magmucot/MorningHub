@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
         }
-        else if (tip === 'it_news' || tip === 'game_news' || tip === 'politics' || tip === 'ai_models') {
+        else if (tip === 'it_news' || tip === 'game_news' || tip === 'politics') {
             const listDiv = document.createElement('div');
             listDiv.className = 'news-list px-1';
             d.forEach(i => {
@@ -236,6 +236,111 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             html = listDiv.outerHTML;
+        }
+        else if (tip === 'ai_models') {
+            const wrap = document.createElement('div');
+            wrap.className = 'news-list px-1';
+
+            // Есть ли оба источника среди не-ошибочных элементов
+            const validItems = d.filter(i => !i.error);
+            const hasBothSrc = validItems.some(i => i.source === 'openrouter')
+                            && validItems.some(i => (i.source || 'artificial') === 'artificial');
+
+            let lastSrc = null;
+            let hasItems = false;
+
+            d.forEach(i => {
+                if (i.error) {
+                    const errDiv = document.createElement('div');
+                    errDiv.className = 'text-danger small mb-1';
+                    errDiv.style.fontSize = '0.7rem';
+                    const srcLbl = i.source === 'openrouter' ? 'OpenRouter' : 'Artificial Analysis';
+                    errDiv.textContent = '\u26a0 ' + srcLbl + ': ' + i.error;
+                    wrap.appendChild(errDiv);
+                    return;
+                }
+
+                hasItems = true;
+                const src = i.source || 'artificial';
+
+                // Лейбл-разделитель только если присутствуют оба источника
+                if (hasBothSrc && src !== lastSrc) {
+                    lastSrc = src;
+                    const lbl = document.createElement('div');
+                    lbl.className = 'text-muted fw-bold mt-1 mb-1 border-bottom pb-1';
+                    lbl.style.cssText = 'font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;';
+                    lbl.textContent = src === 'openrouter'
+                        ? '\ud83d\udd00 OpenRouter \u2014 \u043d\u043e\u0432\u044b\u0435 \u043c\u043e\u0434\u0435\u043b\u0438'
+                        : '\ud83d\udcca Artificial Analysis \u2014 changelog';
+                    wrap.appendChild(lbl);
+                } else {
+                    lastSrc = src;
+                }
+
+                if (src === 'openrouter') {
+                    const card = document.createElement('div');
+                    card.className = 'mb-2 p-2 rounded';
+                    card.style.cssText = 'background:rgba(99,102,241,0.09);border:1px solid rgba(99,102,241,0.22);';
+
+                    const titleRow = document.createElement('div');
+                    titleRow.className = 'd-flex align-items-start justify-content-between gap-1';
+
+                    const a = document.createElement('a');
+                    a.href = i.link || '#';
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.className = 'fw-semibold small text-break';
+                    a.style.cssText = 'line-height:1.35;color:inherit;word-break:break-word;flex:1;';
+                    a.textContent = i.title || 'N/A';
+                    titleRow.appendChild(a);
+
+                    if (i.mod) {
+                        const modSpan = document.createElement('span');
+                        modSpan.style.cssText = 'font-size:0.72rem;white-space:nowrap;flex-shrink:0;margin-left:4px;';
+                        modSpan.textContent = i.mod;
+                        titleRow.appendChild(modSpan);
+                    }
+                    card.appendChild(titleRow);
+
+                    const metaRow = document.createElement('div');
+                    metaRow.className = 'd-flex flex-wrap gap-1 mt-1';
+
+                    const mkBadge = (txt, cls) => {
+                        const b = document.createElement('span');
+                        b.className = 'badge ' + cls;
+                        b.style.fontSize = '0.58rem';
+                        b.textContent = txt;
+                        return b;
+                    };
+
+                    if (i.price) {
+                        let pc = 'bg-secondary';
+                        if (i.price === 'free') pc = 'bg-success';
+                        else if (i.price === 'special') pc = 'bg-warning text-dark';
+                        metaRow.appendChild(mkBadge(i.price, pc));
+                    }
+                    if (i.ctx)  metaRow.appendChild(mkBadge('ctx ' + i.ctx, 'bg-primary bg-opacity-75'));
+                    if (i.date) metaRow.appendChild(mkBadge(i.date, 'bg-light text-dark border'));
+
+                    card.appendChild(metaRow);
+                    wrap.appendChild(card);
+                } else {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'news-item';
+                    const a = document.createElement('a');
+                    a.href = i.link || '#';
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = i.title || 'N/A';
+                    itemDiv.appendChild(a);
+                    wrap.appendChild(itemDiv);
+                }
+            });
+
+            if (!hasItems) {
+                wrap.innerHTML = '<div class="text-muted small text-center mt-2">Net dannyh</div>';
+            }
+            html = wrap.outerHTML;
         }
         else if (tip === 'weather') {
             html = `
@@ -270,6 +375,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             kon.innerHTML = html;
         }
+        // justify-content-center nuzhno tolko dlya spinnera zagruzki.
+        // Posle rendera kontenta ego nado ubrat, inache verh obrezaetsya pri overflow.
+        kon.classList.remove('justify-content-center');
+        kon.scrollTop = 0;
 
         setTimeout(() => {
             const is_dark = document.body.getAttribute('data-theme') === 'dark';
